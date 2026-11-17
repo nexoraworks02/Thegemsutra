@@ -8,6 +8,7 @@ coverage/
 .env
 .env.*
 !.env.example
+!.env.template
 .DS_Store
 Thumbs.db
 services/image/.cache/

@@ -12,5 +12,21 @@ module.exports = defineConfig({
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     }
-  }
+  },
+  modules: [
+    {
+      // Customer emails. In development they are saved as HTML files in .outbox/
+      // (swap the provider for Resend/SendGrid in production).
+      resolve: "@medusajs/medusa/notification",
+      options: {
+        providers: [
+          {
+            resolve: "./src/modules/outbox-notification",
+            id: "outbox",
+            options: { channels: ["email"], dir: ".outbox" },
+          },
+        ],
+      },
+    },
+  ],
 })

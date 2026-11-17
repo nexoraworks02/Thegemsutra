@@ -88,6 +88,7 @@ export interface StoreShippingOption {
 
 export interface StoreOrder {
   id: string;
+  metadata?: Record<string, unknown> | null;
   display_id: number;
   email: string;
   created_at: string;

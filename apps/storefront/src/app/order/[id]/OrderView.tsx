@@ -2,17 +2,25 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { formatMoney } from "@jemsutra/design-engine";
+import { PRODUCTION_STAGES, STAGE_INFO, formatMoney, readProduction, type ProductionState } from "@jemsutra/design-engine";
 import { store, type StoreOrder } from "@/lib/medusa";
 import { CartLine } from "@/app/cart/CartView";
 
 export function OrderView({ id }: { id: string }) {
   const [order, setOrder] = useState<StoreOrder | null>(null);
+  const [tracking, setTracking] = useState<ProductionState | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    store<{ order: StoreOrder }>(`/store/orders/${encodeURIComponent(id)}?fields=*items,*shipping_address,*shipping_methods`)
-      .then(({ order }) => setOrder(order))
+    const oid = encodeURIComponent(id);
+    Promise.all([
+      store<{ order: StoreOrder }>(`/store/orders/${oid}?fields=*items,*shipping_address,*shipping_methods`),
+      store<{ tracking: ProductionState }>(`/store/order-tracking/${oid}`).catch(() => null),
+    ])
+      .then(([{ order }, t]) => {
+        setOrder(order);
+        setTracking(t?.tracking ?? null);
+      })
       .catch(() => setError("We couldn't find this order."));
   }, [id]);
 
@@ -27,23 +35,40 @@ export function OrderView({ id }: { id: string }) {
   if (!order) return <div className="h-64 bg-sand animate-pulse rounded-sm" />;
 
   const a = order.shipping_address;
+  const prod = tracking ?? readProduction(null, order.created_at);
+  const paid = prod.stage === "delivered";
   return (
     <div>
-      <p className="eyebrow text-gold-dark">Thank you</p>
-      <h1 className="mt-2 text-3xl sm:text-4xl">Your order is confirmed</h1>
+      <p className="eyebrow text-gold-dark">Order #{order.display_id}</p>
+      <h1 className="mt-2 text-3xl sm:text-4xl">{prod.stage === "placed" ? "Your order is confirmed" : STAGE_INFO[prod.stage].customerTitle}</h1>
       <p className="mt-3 text-muted">
-        Order <span className="text-ink font-medium">#{order.display_id}</span> · A confirmation will be sent to {order.email}.
-        Our artisans will start hand-making your piece now.
+        Updates are sent to {order.email}. Bookmark this page to follow your order.
       </p>
 
-      <ol className="mt-8 grid gap-3 sm:grid-cols-4 text-xs">
-        {["Order placed", "Being hand-made (5-7 days)", "Quality check", "Out for delivery"].map((s, i) => (
-          <li key={s} className={`border p-3 rounded-sm ${i === 0 ? "border-ink bg-paper" : "border-line text-muted"}`}>
-            <span className="block font-serif text-lg text-gold">{String(i + 1).padStart(2, "0")}</span>
-            {s}
-          </li>
-        ))}
-      </ol>
+      <section className="mt-8 border border-line bg-paper p-5" aria-label="Order progress">
+        <p className="eyebrow text-gold-dark">{STAGE_INFO[prod.stage].label}</p>
+        <p className="mt-1 font-serif text-xl">{STAGE_INFO[prod.stage].customerTitle}</p>
+        <p className="mt-1 text-sm text-muted">{STAGE_INFO[prod.stage].customerMessage}</p>
+        {prod.stage === "shipped" && prod.tracking_number && (
+          <p className="mt-3 text-sm">Courier: <b>{prod.courier}</b> · Tracking number: <b>{prod.tracking_number}</b></p>
+        )}
+        {prod.due_date && ["placed", "in_production", "quality_check"].includes(prod.stage) && (
+          <p className="mt-3 text-sm">Expected to ship by <b>{new Date(`${prod.due_date}T00:00:00Z`).toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" })}</b></p>
+        )}
+        <ol className="mt-5 grid gap-3 sm:grid-cols-5 text-xs">
+          {PRODUCTION_STAGES.map((s, i) => {
+            const h = prod.history.find((x) => x.stage === s);
+            const current = s === prod.stage;
+            return (
+              <li key={s} className={`border p-3 rounded-sm ${current ? "border-ink bg-ivory" : h ? "border-line" : "border-line text-muted"}`}>
+                <span className={`block font-serif text-lg ${h ? "text-gold" : "text-line"}`}>{h ? "✓" : String(i + 1).padStart(2, "0")}</span>
+                {STAGE_INFO[s].label}
+                {h && <span className="block mt-1 text-[10px] text-muted">{new Date(h.at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</span>}
+              </li>
+            );
+          })}
+        </ol>
+      </section>
 
       <ul className="mt-10 space-y-6">
         {order.items.map((i) => <CartLine key={i.id} line={i} />)}
@@ -67,9 +92,9 @@ export function OrderView({ id }: { id: string }) {
           <dl className="mt-3 space-y-2">
             <div className="flex justify-between"><dt>Items</dt><dd>{formatMoney(order.item_total)}</dd></div>
             <div className="flex justify-between"><dt>Delivery</dt><dd>{order.shipping_total ? formatMoney(order.shipping_total) : "Free"}</dd></div>
-            <div className="flex justify-between border-t border-line pt-2 font-medium"><dt>Total due on delivery</dt><dd>{formatMoney(order.total)}</dd></div>
+            <div className="flex justify-between border-t border-line pt-2 font-medium"><dt>{paid ? "Total paid" : "Total due on delivery"}</dt><dd>{formatMoney(order.total)}</dd></div>
           </dl>
-          <p className="mt-3 text-muted">Cash on delivery</p>
+          <p className="mt-3 text-muted">Cash on delivery{paid ? " · received" : ""}</p>
         </section>
       </div>
 

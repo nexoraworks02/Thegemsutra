@@ -153,3 +153,32 @@ describe("describeDesign", () => {
     expect(variantSku(twin, "14KR")).toBe("JS0001-14KR");
   });
 });
+
+describe("production flow", () => {
+  it("moves forward one stage at a time", async () => {
+    const { readProduction, advance, canMoveTo } = await import("./index");
+    const s0 = readProduction(null, "2026-11-17T10:00:00Z");
+    expect(s0.stage).toBe("placed");
+    expect(canMoveTo("placed", "shipped")).toBe(false);
+    expect(canMoveTo("placed", "placed")).toBe(false);
+    const s1 = advance(s0, "in_production", { by: "user_1" });
+    expect(s1.stage).toBe("in_production");
+    expect(s1.history.map((h) => h.stage)).toEqual(["placed", "in_production"]);
+    expect(() => advance(s1, "delivered")).toThrow();
+  });
+
+  it("requires courier details to ship", async () => {
+    const { readProduction, advance } = await import("./index");
+    let s = readProduction(null, "2026-11-17T10:00:00Z");
+    s = advance(advance(s, "in_production"), "quality_check");
+    expect(() => advance(s, "shipped")).toThrow(/tracking/);
+    const shipped = advance(s, "shipped", { courier: "TCS", tracking_number: "123" });
+    expect(shipped.courier).toBe("TCS");
+  });
+
+  it("promises 7 working days, skipping Sundays", async () => {
+    const { dueDate } = await import("./index");
+    // Tue 17 Nov 2026 + 7 working days (Sun 22 skipped) = Wed 25 Nov
+    expect(dueDate("2026-11-17T10:00:00Z")).toBe("2026-11-25");
+  });
+});

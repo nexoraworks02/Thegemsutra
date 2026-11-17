@@ -26,3 +26,6 @@ build
 .medusa
 # local embedded PostgreSQL data
 .pgdata
+
+# dev email outbox
+.outbox
