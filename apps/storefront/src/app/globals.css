@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+/* THEJEMSUTRA - premium / minimal: ivory, ink, antique gold */
+:root {
+  --ivory: #faf7f2;
+  --paper: #ffffff;
+  --sand: #f1ece3;
+  --line: #e6dfd3;
+  --ink: #1c1a17;
+  --muted: #6f685e;
+  --gold: #a98450;
+  --gold-dark: #8a6a3d;
+  --sale: #a8402f;
+}
+
+@theme inline {
+  --color-ivory: var(--ivory);
+  --color-paper: var(--paper);
+  --color-sand: var(--sand);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-gold: var(--gold);
+  --color-gold-dark: var(--gold-dark);
+  --color-sale: var(--sale);
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-sans: "Montserrat", system-ui, sans-serif;
+  --font-script: "Great Vibes", cursive;
+}
+
+html {
+  background: var(--ivory);
+  color: var(--ink);
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--ivory);
+  color: var(--ink);
+}
+
+h1, h2, h3, .font-serif {
+  font-family: var(--font-serif);
+}
+
+.eyebrow {
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee-track {
+  animation: marquee 40s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; }
+}

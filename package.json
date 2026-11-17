@@ -1,0 +1,21 @@
+{
+  "name": "thejemsutra",
+  "private": true,
+  "version": "0.1.0",
+  "description": "THEJEMSUTRA - personalized made-to-order jewelry store",
+  "workspaces": [
+    "packages/*",
+    "services/*",
+    "apps/storefront"
+  ],
+  "scripts": {
+    "dev:storefront": "npm run dev -w @jemsutra/storefront",
+    "dev:image": "npm run dev -w @jemsutra/image-service",
+    "dev": "npm-run-all --parallel dev:image dev:storefront",
+    "test": "npm run test -w @jemsutra/design-engine",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  }
+}
