@@ -60,6 +60,7 @@ export interface StoreLineItem {
     design?: import("@jemsutra/design-engine").DesignConfig;
     design_summary?: [string, string][];
     image_url?: string;
+    product_path?: string;
     compare_at?: number | null;
   } | null;
 }

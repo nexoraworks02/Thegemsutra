@@ -215,7 +215,7 @@ export function CheckoutForm() {
               <img src={i.metadata?.image_url ?? i.thumbnail ?? ""} alt="" className="h-14 w-20 object-cover border border-line bg-ivory" />
               <div className="flex-1 text-sm">
                 <p className="font-serif">{i.product_title ?? i.title}</p>
-                <p className="text-xs text-muted">{i.variant_title}</p>
+                <p className="text-xs text-muted">{i.metadata?.design_summary?.find(([k]) => k === "Metal")?.[1] ?? i.variant_title}</p>
               </div>
               <p className="text-sm whitespace-nowrap">{formatMoney(i.unit_price * i.quantity)}</p>
             </li>

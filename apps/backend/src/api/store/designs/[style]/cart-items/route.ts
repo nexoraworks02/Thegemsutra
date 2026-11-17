@@ -2,15 +2,14 @@ import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils";
 import { addToCartWorkflow, deleteLineItemsWorkflow } from "@medusajs/medusa/core-flows";
 import {
-  PRODUCT_BY_STYLE,
   configToQuery,
   describeDesign,
   normalizeConfig,
   priceDesign,
   validateForCart,
-  variantSku,
   type DesignConfig,
 } from "@jemsutra/design-engine";
+import { findVariantId, getDesign } from "../../../../../lib/designs";
 
 const IMAGE_URL = process.env.IMAGE_SERVICE_URL ?? "http://localhost:4100";
 
@@ -30,7 +29,7 @@ type Body = {
  * needs is stored in the line item's metadata.
  */
 export async function POST(req: MedusaRequest<Body>, res: MedusaResponse) {
-  const product = PRODUCT_BY_STYLE[req.params.style];
+  const product = (await getDesign(req.scope, req.params.style, { publishedOnly: true }))?.definition;
   if (!product) {
     res.status(404).json({ message: `Unknown design ${req.params.style}` });
     return;
@@ -50,14 +49,9 @@ export async function POST(req: MedusaRequest<Body>, res: MedusaResponse) {
   const price = priceDesign(product, config);
 
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY);
-  const sku = variantSku(product, config.metal);
-  const { data: variants } = await query.graph({
-    entity: "product_variant",
-    fields: ["id"],
-    filters: { sku },
-  });
-  if (!variants.length) {
-    res.status(409).json({ message: `Variant ${sku} is missing - run the seed script.` });
+  const variantId = await findVariantId(req.scope, product, config.metal);
+  if (!variantId) {
+    res.status(409).json({ message: `Design ${product.styleCode} has no product yet - save it in the admin.` });
     return;
   }
 
@@ -71,7 +65,7 @@ export async function POST(req: MedusaRequest<Body>, res: MedusaResponse) {
       cart_id,
       items: [
         {
-          variant_id: variants[0].id,
+          variant_id: variantId,
           quantity: 1,
           unit_price: price.total,
           metadata: {
@@ -81,6 +75,7 @@ export async function POST(req: MedusaRequest<Body>, res: MedusaResponse) {
             price_lines: price.lines,
             compare_at: price.compareAt ?? null,
             image_url: `${IMAGE_URL}/img/${product.styleCode}/${product.slug}.webp?${imageQuery}&w=800`,
+            product_path: `/products/${product.styleCode}/${product.slug}?${configToQuery(product, config, { omitDefaults: true }).toString()}`,
           },
         },
       ],

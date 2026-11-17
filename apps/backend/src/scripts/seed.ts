@@ -5,9 +5,8 @@
  * - Region "Pakistan" (PKR), manual payment provider (works as cash on delivery for now)
  * - Stock location: Lahore Workshop (made-to-order, no stock tracking)
  * - Shipping: free standard delivery, paid express
- * - Products: one Medusa product per design, one variant per metal (base price in PKR).
- *   Stones, engraving, size and packaging are priced by @jemsutra/design-engine and
- *   stored as line-item metadata at checkout.
+ * - Designs: the starter catalog saved to the design table + a Medusa product each
+ *   (one "Made to order" variant each; all option pricing comes from the design).
  *
  * Run (after DATABASE_URL is set and migrations ran):  npm run seed
  */
@@ -18,7 +17,6 @@ import {
   createApiKeysWorkflow,
   createInventoryLevelsWorkflow,
   createProductCategoriesWorkflow,
-  createProductsWorkflow,
   createRegionsWorkflow,
   createSalesChannelsWorkflow,
   createShippingOptionsWorkflow,
@@ -30,11 +28,10 @@ import {
   updateStoresStep,
   updateStoresWorkflow,
 } from "@medusajs/medusa/core-flows";
-import { METAL_BY_CODE, PRODUCTS, configToQuery, defaultConfig } from "@jemsutra/design-engine";
+import { PRODUCTS } from "@jemsutra/design-engine";
+import { getDesign, saveDesign } from "../lib/designs";
 
 type ApiKey = { id: string };
-
-const IMAGE_URL = process.env.IMAGE_SERVICE_URL ?? "http://localhost:4100";
 
 const updateStoreCurrencies = createWorkflow(
   "update-store-currencies",
@@ -186,38 +183,14 @@ export default async function seedStore({ container }: ExecArgs) {
       ],
     },
   });
-  const categoryFor = (type: string) =>
-    categories.find((c) => c.name.toLowerCase() === `${type}s`)?.id ?? categories[0].id;
 
-  await createProductsWorkflow(container).run({
-    input: {
-      products: PRODUCTS.map((p) => {
-        const imageQuery = configToQuery(p, defaultConfig(p), { include: "visual" }).toString();
-        const metalNames = p.metals.map((m) => METAL_BY_CODE[m.metal]!.name);
-        return {
-          title: p.name,
-          handle: p.slug,
-          description: p.description,
-          status: ProductStatus.PUBLISHED,
-          category_ids: [categoryFor(p.type)],
-          shipping_profile_id: shippingProfile!.id,
-          thumbnail: `${IMAGE_URL}/img/${p.styleCode}/${p.slug}.webp?${imageQuery}&w=600`,
-          images: [{ url: `${IMAGE_URL}/img/${p.styleCode}/${p.slug}.webp?${imageQuery}&w=1200` }],
-          metadata: { style_code: p.styleCode, personalised: true, sale_percent: p.salePercent ?? 0 },
-          options: [{ title: "Metal", values: metalNames }],
-          variants: p.metals.map((m) => ({
-            title: METAL_BY_CODE[m.metal]!.name,
-            sku: `${p.styleCode}-${m.metal}`,
-            manage_inventory: false, // made to order
-            options: { Metal: METAL_BY_CODE[m.metal]!.name },
-            metadata: { metal_code: m.metal },
-            prices: [{ amount: m.price, currency_code: "pkr" }],
-          })),
-          sales_channels: [{ id: defaultSalesChannel[0].id }],
-        };
-      }),
-    },
-  });
+  // Designs (options + prices) live in the design table; saving each one also
+  // creates its Medusa product. Afterwards they are edited in the admin "Designs" page.
+  for (const p of PRODUCTS) {
+    if (!(await getDesign(container, p.styleCode))) {
+      await saveDesign(container, { definition: p, status: "published" }, { create: true });
+    }
+  }
 
   // Made-to-order variants don't track stock; this only covers any stocked add-ons.
   const { data: inventoryItems } = await query.graph({ entity: "inventory_item", fields: ["id"] });

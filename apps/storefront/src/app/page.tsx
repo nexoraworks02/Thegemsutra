@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { PRODUCTS } from "@jemsutra/design-engine";
+import { PRODUCTS, normalizeConfig } from "@jemsutra/design-engine";
 import { ProductCard } from "@/components/ProductCard";
+import { getDesigns } from "@/lib/designs";
 import { designImageUrl, productPath } from "@/lib/media";
-import { normalizeConfig } from "@jemsutra/design-engine";
 
 const TRUST = [
   "Designed by you",
@@ -19,8 +19,10 @@ const STEPS = [
   { n: "03", title: "Add your words", text: "Names, dates or a secret message in the font you love." },
 ];
 
-export default function HomePage() {
-  const hero = PRODUCTS[0]!;
+export default async function HomePage() {
+  const designs = await getDesigns();
+  // Hero shows the two-name ring when available (falls back to the first design).
+  const hero = designs.find((d) => d.styleCode === "JS0001") ?? designs[0] ?? PRODUCTS[0]!;
   const heroConfig = normalizeConfig(hero, {
     metal: "14KY",
     stones: { s1: "RUBY", s2: "SAPH" },
@@ -92,10 +94,11 @@ export default function HomePage() {
             <p className="eyebrow text-gold-dark">The collection</p>
             <h2 className="mt-3 text-3xl sm:text-4xl">Start with a design you love</h2>
           </div>
-          <p className="hidden sm:block text-sm text-muted">{PRODUCTS.length} designs</p>
+          <p className="hidden sm:block text-sm text-muted">{designs.length} designs</p>
         </div>
         <div className="mt-10 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-          {PRODUCTS.map((p) => (
+          {designs.length === 0 && <p className="text-muted">New designs are coming soon.</p>}
+          {designs.map((p) => (
             <ProductCard key={p.styleCode} product={p} />
           ))}
         </div>

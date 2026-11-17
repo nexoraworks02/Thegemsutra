@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "Shared product option model, validation, URL state and pricing for THEJEMSUTRA",
+  "type": "module",
   "main": "./dist/index.js",
   "types": "./src/index.ts",
   "exports": {
@@ -13,7 +14,7 @@
     }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "tsc -p tsconfig.build.json && node -e \"require('fs').writeFileSync('dist/package.json', JSON.stringify({ type: 'commonjs' }))\"",
     "prepare": "npm run build",
     "test": "vitest run",
     "test:watch": "vitest",

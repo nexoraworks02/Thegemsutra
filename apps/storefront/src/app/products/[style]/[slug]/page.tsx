@@ -2,17 +2,22 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { PRODUCTS, PRODUCT_BY_STYLE, defaultConfig, fromPrice } from "@jemsutra/design-engine";
+import { PRODUCTS, defaultConfig, fromPrice } from "@jemsutra/design-engine";
+import { getDesign, getDesigns } from "@/lib/designs";
 import { Designer } from "@/components/designer/Designer";
 import { designImageUrl } from "@/lib/media";
 
-export function generateStaticParams() {
-  return PRODUCTS.map((p) => ({ style: p.styleCode, slug: p.slug }));
+export async function generateStaticParams() {
+  // Pre-render published designs. Cache Components needs at least one route, so if the
+  // backend is down at build time fall back to the starter designs; designs added
+  // later in the admin are rendered on their first visit.
+  const designs = await getDesigns();
+  return (designs.length ? designs : PRODUCTS).map((p) => ({ style: p.styleCode, slug: p.slug }));
 }
 
 export async function generateMetadata(props: PageProps<"/products/[style]/[slug]">): Promise<Metadata> {
   const { style } = await props.params;
-  const product = PRODUCT_BY_STYLE[style];
+  const product = await getDesign(style);
   if (!product) return {};
   return {
     title: product.name,
@@ -37,7 +42,7 @@ export default function ProductPage(props: PageProps<"/products/[style]/[slug]">
 
 async function ProductContent({ params }: { params: PageProps<"/products/[style]/[slug]">["params"] }) {
   const { style } = await params;
-  const product = PRODUCT_BY_STYLE[style];
+  const product = await getDesign(style);
   if (!product) notFound();
 
   const jsonLd = {
@@ -60,7 +65,7 @@ async function ProductContent({ params }: { params: PageProps<"/products/[style]
   return (
     <>
       <nav aria-label="Breadcrumb" className="text-xs text-muted mb-6">
-        <Link href="/" className="hover:text-ink">Home</Link> / <Link href="/#collection" className="hover:text-ink">Rings</Link> /{" "}
+        <Link href="/" className="hover:text-ink">Home</Link> / <Link href="/#collection" className="hover:text-ink">{{ ring: "Rings", necklace: "Necklaces", bracelet: "Bracelets", earring: "Earrings" }[product.type]}</Link> /{" "}
         <span className="text-ink">{product.name}</span>
       </nav>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />

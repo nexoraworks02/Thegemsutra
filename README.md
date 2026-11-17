@@ -38,6 +38,8 @@ Requirements: Node 20+ (tested on Node 24), npm 10+.
 npm install
 ```
 
+The image service reads designs from the backend: copy `services/image/.env.example` to `.env` and use the same `INTERNAL_API_KEY` as `apps/backend/.env`. The storefront needs `REVALIDATE_SECRET` (same as the backend) in `apps/storefront/.env.local`.
+
 ```bash
 npm run dev:image
 ```
@@ -93,7 +95,17 @@ npm run dev
 
 - API: http://localhost:9000 · Admin dashboard: http://localhost:9000/app
 - Custom store endpoints: `GET /store/designs`, `POST /store/designs/:style/price`, `POST /store/designs/:style/cart-items` (adds a design to a cart with a server-calculated price and the workshop sheet in line metadata)
-- The seed creates the Pakistan region (PKR), Lahore Workshop, free + express delivery, and one product per design with a variant per metal.
+- The seed creates the Pakistan region (PKR), Lahore Workshop, free + express delivery, and the starter designs.
+- Databases created before the Designs page existed: run `npx medusa exec ./src/scripts/import-designs.ts` once.
+
+### Managing designs (admin → Designs)
+
+Designs (metals and prices, stone slots and stone prices, engraving fields, fonts, sizes, packaging, sale %) are edited in the admin at http://localhost:9000/app/designs - no code changes needed.
+
+- **New design** or **Duplicate** an existing one; save as **draft** (hidden) or **publish** (live on the store).
+- **Render artwork**: until a design has its own 3D renders, it can borrow the artwork of a similar design.
+- Every save is validated (with plain-language errors), creates/updates the Medusa product (one "Made to order" variant) and refreshes the storefront.
+- Only drafts can be deleted; unpublish a design to hide it.
 
 ### Tests and checks
 
@@ -136,9 +148,11 @@ Invalid values fall back to product defaults, so the service only renders allowe
 
 | Part | Status |
 |---|---|
-| Design engine (options, pricing, URL state) | ✅ working, 16 tests |
+| Design engine (options, pricing, URL state, validation, production stages) | ✅ working, 21 tests |
 | Image render service | ✅ working with demo layers |
 | Storefront: home, product designer, bag | ✅ working, bag stored in the Medusa cart |
 | Medusa backend + local PostgreSQL 17 | ✅ running: Pakistan/PKR region, delivery options, designs seeded, admin dashboard |
 | Checkout (cash on delivery) + order confirmation | ✅ working end to end |
+| Admin Designs manager (create, edit, publish designs without code) | ✅ working |
+| Workshop flow (stages, emails, workshop sheet, tracking) | ✅ working |
 | Online payments (card, JazzCash, Easypaisa), customer accounts, order emails | ⏳ next |

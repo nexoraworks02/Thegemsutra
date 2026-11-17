@@ -61,12 +61,14 @@ export async function renderDesign(
   config: DesignConfig,
   opts: RenderOptions = {},
 ): Promise<{ buffer: Buffer; contentType: string }> {
-  const manifest = await loadManifest(product.styleCode);
-  if (!manifest) throw new RenderError(404, `No render assets for ${product.styleCode}`);
+  // A new design can borrow another design's artwork until its own 3D renders exist.
+  const artwork = product.renderTemplate || product.styleCode;
+  const manifest = await loadManifest(artwork);
+  if (!manifest) throw new RenderError(404, `No render assets for ${artwork}`);
   const viewName = opts.view && manifest.views[opts.view] ? opts.view : manifest.defaultView;
   const view = manifest.views[viewName]!;
   const metal = METAL_BY_CODE[config.metal]!;
-  const dir = path.join(ASSETS_DIR, "products", product.styleCode, viewName);
+  const dir = path.join(ASSETS_DIR, "products", artwork, viewName);
 
   const overlays: OverlayOptions[] = [{ input: await layer(path.join(dir, `metal-${metal.code}.png`)) }];
 

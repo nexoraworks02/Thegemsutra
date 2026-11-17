@@ -1,11 +1,11 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
 import {
-  PRODUCT_BY_STYLE,
   normalizeConfig,
   priceDesign,
   validateForCart,
   type DesignConfig,
 } from "@jemsutra/design-engine";
+import { getDesign } from "../../../../../lib/designs";
 
 /**
  * POST /store/designs/:style/price
@@ -17,7 +17,7 @@ import {
  * creating the cart line item.
  */
 export async function POST(req: MedusaRequest<Partial<DesignConfig>>, res: MedusaResponse) {
-  const product = PRODUCT_BY_STYLE[req.params.style];
+  const product = (await getDesign(req.scope, req.params.style, { publishedOnly: true }))?.definition;
   if (!product) {
     res.status(404).json({ message: `Unknown design ${req.params.style}` });
     return;

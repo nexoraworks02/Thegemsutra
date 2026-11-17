@@ -2,9 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { PRODUCT_BY_STYLE, formatMoney } from "@jemsutra/design-engine";
+import { formatMoney } from "@jemsutra/design-engine";
 import { useCart } from "@/lib/cart";
-import { productPath } from "@/lib/media";
 import type { StoreLineItem } from "@/lib/medusa";
 
 export function CartView() {
@@ -61,8 +60,7 @@ export function CartView() {
 
 export function CartLine({ line, busy, onRemove }: { line: StoreLineItem; busy?: boolean; onRemove?: () => void }) {
   const meta = line.metadata ?? {};
-  const product = meta.style_code ? PRODUCT_BY_STYLE[meta.style_code] : undefined;
-  const modifyHref = product && meta.design ? withParam(productPath(product, meta.design), "line", line.id) : null;
+  const modifyHref = meta.product_path ? withParam(meta.product_path, "line", line.id) : null;
 
   return (
     <li className="grid grid-cols-[110px_1fr] sm:grid-cols-[180px_1fr] gap-5 border border-line bg-paper p-4">

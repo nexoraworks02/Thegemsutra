@@ -2,7 +2,8 @@ import { createHash } from "node:crypto";
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { PRODUCT_BY_STYLE, configFromQuery, configToQuery } from "@jemsutra/design-engine";
+import { configFromQuery, configToQuery } from "@jemsutra/design-engine";
+import { getDesign } from "./designs";
 import { RenderError, closestWidth, renderDesign, renderStone } from "./render";
 
 /**
@@ -23,12 +24,15 @@ const remember = (key: string, value: { buffer: Buffer; contentType: string }) =
 };
 
 const IMMUTABLE = "public, max-age=31536000, immutable";
+// Designs can be edited in the admin, so design images are only cached briefly.
+const DESIGN_IMAGE_CACHE = "public, max-age=600, stale-while-revalidate=86400";
 
 app.get("/health", (c) => c.json({ ok: true, cached: cache.size }));
 
 app.get("/img/:style/:file", async (c) => {
-  const product = PRODUCT_BY_STYLE[c.req.param("style")];
-  if (!product) return c.text("Unknown product", 404);
+  const found = await getDesign(c.req.param("style"));
+  if (!found) return c.text("Unknown product", 404);
+  const product = found.def;
 
   const file = c.req.param("file");
   const ext = file.split(".").pop();
@@ -41,7 +45,7 @@ app.get("/img/:style/:file", async (c) => {
   const view = url.searchParams.get("v") ?? undefined;
   const width = closestWidth(Number(url.searchParams.get("w") ?? 800));
   const canonical = configToQuery(product, config, { include: "visual" }).toString();
-  const key = createHash("sha1").update(`${product.styleCode}|${view}|${width}|${format}|${canonical}`).digest("hex");
+  const key = createHash("sha1").update(`${product.styleCode}|${found.version}|${view}|${width}|${format}|${canonical}`).digest("hex");
 
   let hit = cache.get(key);
   if (!hit) {
@@ -54,7 +58,7 @@ app.get("/img/:style/:file", async (c) => {
       return c.text("Render failed", 500);
     }
   }
-  return c.body(new Uint8Array(hit.buffer), 200, { "Content-Type": hit.contentType, "Cache-Control": IMMUTABLE, ETag: `"${key}"` });
+  return c.body(new Uint8Array(hit.buffer), 200, { "Content-Type": hit.contentType, "Cache-Control": DESIGN_IMAGE_CACHE, ETag: `"${key}"` });
 });
 
 app.get("/stones/:shape/:file", async (c) => {

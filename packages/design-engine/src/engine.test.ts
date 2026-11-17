@@ -182,3 +182,24 @@ describe("production flow", () => {
     expect(dueDate("2026-11-17T10:00:00Z")).toBe("2026-11-25");
   });
 });
+
+describe("validateProductDef", () => {
+  it("accepts the starter catalog", async () => {
+    const { validateProductDef, PRODUCTS } = await import("./index");
+    for (const p of PRODUCTS) expect(validateProductDef(p)).toEqual([]);
+  });
+
+  it("explains what is wrong with a broken design", async () => {
+    const { validateProductDef } = await import("./index");
+    const bad = structuredClone(twin);
+    bad.styleCode = "ring 3";
+    bad.slug = "Bad Slug";
+    bad.defaultMetal = "PLAT";
+    bad.metals[0]!.price = 0;
+    bad.stoneSlots[0]!.defaultStone = "NOPE";
+    bad.engravings.push({ key: "e1", label: "Dup", maxChars: 10, price: 0 });
+    bad.fonts = [];
+    const fields = validateProductDef(bad).map((i) => i.field);
+    expect(fields).toEqual(expect.arrayContaining(["styleCode", "slug", "defaultMetal", "metals", "Left Heart", "engravings", "fonts"]));
+  });
+});

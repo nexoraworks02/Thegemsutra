@@ -1,14 +1,14 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
-import { PRODUCTS, fromPrice } from "@jemsutra/design-engine";
+import { fromPrice } from "@jemsutra/design-engine";
+import { listDesigns } from "../../../lib/designs";
 
 /**
  * GET /store/designs
- * Lists the personalisable designs and their option definitions.
- * (Phase 1 moves these definitions into Medusa products + a "design" module;
- * the shape of this response stays the same for the storefront.)
+ * Published designs with their full option definitions (edited in the admin).
  */
-export async function GET(_req: MedusaRequest, res: MedusaResponse) {
+export async function GET(req: MedusaRequest, res: MedusaResponse) {
+  const designs = await listDesigns(req.scope, { publishedOnly: true });
   res.json({
-    designs: PRODUCTS.map((p) => ({ ...p, from_price: fromPrice(p), currency_code: "pkr" })),
+    designs: designs.map((d) => ({ ...d.definition, from_price: fromPrice(d.definition), currency_code: "pkr" })),
   });
 }

@@ -15,6 +15,10 @@ module.exports = defineConfig({
   },
   modules: [
     {
+      // Personalisable designs (options + prices), edited in the admin "Designs" page.
+      resolve: "./src/modules/design",
+    },
+    {
       // Customer emails. In development they are saved as HTML files in .outbox/
       // (swap the provider for Resend/SendGrid in production).
       resolve: "@medusajs/medusa/notification",

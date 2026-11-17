@@ -101,6 +101,11 @@ export interface ProductDef {
   /** Strike-through "compare at" price = price / (1 - salePercent/100) */
   salePercent?: number;
   badges?: string[];
+  /**
+   * Use another design's render layers until this design has its own 3D renders
+   * (e.g. a new ring reusing JS0001 artwork). Defaults to its own styleCode.
+   */
+  renderTemplate?: string;
 }
 
 /** Everything the shopper chose. Serialisable to/from the URL. */
