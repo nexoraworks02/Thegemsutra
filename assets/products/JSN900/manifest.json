@@ -1,0 +1,23 @@
+{
+  "styleCode": "JSN900",
+  "defaultView": "worn",
+  "views": {
+    "worn": {
+      "width": 1200,
+      "height": 900,
+      "background": "transparent",
+      "stoneShape": "round",
+      "engravings": {},
+      "nameplate": {
+        "textKey": "e1",
+        "neckLeft": { "x": 200, "y": 70 },
+        "neckRight": { "x": 1000, "y": 70 },
+        "plateCenter": { "x": 600, "y": 690 },
+        "maxPlateWidth": 330,
+        "fontSize": 96,
+        "chainWidth": 5,
+        "mmPerPx": 0.1375
+      }
+    }
+  }
+}

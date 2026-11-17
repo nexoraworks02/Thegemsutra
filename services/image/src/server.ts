@@ -4,7 +4,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { configFromQuery, configToQuery } from "@jemsutra/design-engine";
 import { getDesign } from "./designs";
-import { RenderError, closestWidth, renderDesign, renderStone } from "./render";
+import { RenderError, closestWidth, loadManifest, renderDesign, renderStone } from "./render";
 
 /**
  * GET /img/:style/:name.webp?v=top&w=800&m=14KR&s1=EMER&e1=Ali&ef=script
@@ -59,6 +59,29 @@ app.get("/img/:style/:file", async (c) => {
     }
   }
   return c.body(new Uint8Array(hit.buffer), 200, { "Content-Type": hit.contentType, "Cache-Control": DESIGN_IMAGE_CACHE, ETag: `"${key}"` });
+});
+
+/**
+ * GET /tryon-meta/:style  (try-on prototype)
+ * Geometry of a design's try-on view: image size and the two neck anchor points.
+ * Only designs whose manifest has a "nameplate" view support try-on.
+ */
+app.get("/tryon-meta/:style", async (c) => {
+  const found = await getDesign(c.req.param("style"));
+  if (!found) return c.json({ message: "Unknown product" }, 404);
+  const manifest = await loadManifest(found.def.renderTemplate || found.def.styleCode);
+  const entry = manifest && Object.entries(manifest.views).find(([, v]) => v.nameplate);
+  if (!entry) return c.json({ message: "This design does not support try-on yet" }, 404);
+  const [view, v] = entry;
+  return c.json({
+    view,
+    width: v.width,
+    height: v.height,
+    neckLeft: v.nameplate!.neckLeft,
+    neckRight: v.nameplate!.neckRight,
+    mmPerPx: v.nameplate!.mmPerPx,
+    approximate: true,
+  });
 });
 
 app.get("/stones/:shape/:file", async (c) => {

@@ -8,3 +8,5 @@ export * from "./money";
 export * from "./describe";
 export * from "./production";
 export * from "./validate";
+export * from "./catalog/demo";
+export * from "./tryon";

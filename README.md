@@ -148,11 +148,12 @@ Invalid values fall back to product defaults, so the service only renders allowe
 
 | Part | Status |
 |---|---|
-| Design engine (options, pricing, URL state, validation, production stages) | ✅ working, 21 tests |
+| Design engine (options, pricing, URL state, validation, production stages, try-on geometry) | ✅ working, 33 tests (+8 image service) |
 | Image render service | ✅ working with demo layers |
 | Storefront: home, product designer, bag | ✅ working, bag stored in the Medusa cart |
 | Medusa backend + local PostgreSQL 17 | ✅ running: Pakistan/PKR region, delivery options, designs seeded, admin dashboard |
 | Checkout (cash on delivery) + order confirmation | ✅ working end to end |
 | Admin Designs manager (create, edit, publish designs without code) | ✅ working |
 | Workshop flow (stages, emails, workshop sheet, tracking) | ✅ working |
+| Virtual try-on Phase 0 (developer-only: name necklace on a selfie) | ✅ prototype - see [docs/tryon-phase0.md](docs/tryon-phase0.md) |
 | Online payments (card, JazzCash, Easypaisa), customer accounts, order emails | ⏳ next |

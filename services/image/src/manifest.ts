@@ -29,10 +29,35 @@ export interface EngravingArea {
   opacity?: number;
 }
 
+export interface Point {
+  x: number;
+  y: number;
+}
+
+/**
+ * Name necklace drawn procedurally (try-on prototype). Coordinates are in the
+ * view's pixel space. neckLeft/neckRight are where the chain disappears behind
+ * the neck - the try-on maps these onto the customer's neck.
+ */
+export interface NameplateSpec {
+  textKey: string; // engraving key holding the name, e.g. "e1"
+  neckLeft: Point;
+  neckRight: Point;
+  plateCenter: Point;
+  maxPlateWidth: number;
+  fontSize: number;
+  chainWidth?: number;
+  /** APPROXIMATE millimetres per pixel (demo geometry, not measured from CAD). */
+  mmPerPx: number;
+}
+
 export interface ViewManifest {
   width: number;
   height: number;
+  /** CSS colour, or "transparent" for an alpha background (try-on assets). */
   background: string;
+  /** When set, this view is a procedurally drawn name necklace instead of layers. */
+  nameplate?: NameplateSpec;
   /** Fixed slots (s1, s2...) */
   slots?: Record<string, SlotPlacement>;
   /** Stone-count designs: placements per count, e.g. { "5": { s1: ..., s5: ... } } */

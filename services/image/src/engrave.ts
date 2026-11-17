@@ -16,7 +16,7 @@ const FONT_FILES: Record<string, string> = {
 
 const fontCache = new Map<string, opentype.Font>();
 
-function loadFont(code: string): opentype.Font {
+export function loadFont(code: string): opentype.Font {
   const key = FONT_FILES[code] ? code : "classic";
   let font = fontCache.get(key);
   if (!font) {
@@ -28,7 +28,7 @@ function loadFont(code: string): opentype.Font {
 }
 
 /** Script fonts look smaller at the same size. */
-const SIZE_FACTOR: Record<string, number> = { script: 1.35, modern: 0.82 };
+export const SIZE_FACTOR: Record<string, number> = { script: 1.35, modern: 0.82 };
 
 /**
  * Lay text along an ellipse arc and return SVG path markup with an engraved look:

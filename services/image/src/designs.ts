@@ -1,4 +1,4 @@
-import { PRODUCT_BY_STYLE, type ProductDef } from "@jemsutra/design-engine";
+import { DEMO_PRODUCT_BY_STYLE, PRODUCT_BY_STYLE, type ProductDef } from "@jemsutra/design-engine";
 
 /**
  * Design definitions come from the backend (edited in the admin), including
@@ -8,6 +8,8 @@ import { PRODUCT_BY_STYLE, type ProductDef } from "@jemsutra/design-engine";
 const MEDUSA_URL = process.env.MEDUSA_URL ?? "http://localhost:9000";
 const INTERNAL_API_KEY = process.env.INTERNAL_API_KEY ?? "";
 const TTL_MS = 30_000;
+/** Development-only try-on demo designs (never in the store catalog). */
+export const TRYON_DEMO_ENABLED = process.env.ENABLE_TRYON_DEMO === "true";
 
 interface Entry {
   def: ProductDef | null;
@@ -19,6 +21,7 @@ let warned = false;
 
 export async function getDesign(styleCode: string): Promise<{ def: ProductDef; version: string } | null> {
   if (!/^[A-Z]{2,4}\d{3,5}$/.test(styleCode)) return null;
+  if (TRYON_DEMO_ENABLED && DEMO_PRODUCT_BY_STYLE[styleCode]) return { def: DEMO_PRODUCT_BY_STYLE[styleCode]!, version: "demo" };
   const hit = cache.get(styleCode);
   if (hit && Date.now() - hit.at < TTL_MS) return hit.def ? { def: hit.def, version: hit.version } : null;
 

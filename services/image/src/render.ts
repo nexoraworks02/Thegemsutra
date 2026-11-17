@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import sharp, { type OverlayOptions } from "sharp";
 import { METAL_BY_CODE, type DesignConfig, type ProductDef } from "@jemsutra/design-engine";
 import { engravingSvg } from "./engrave";
+import { necklaceSvg } from "./necklace";
 import type { ProductManifest, SlotPlacement } from "./manifest";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -70,27 +71,37 @@ export async function renderDesign(
   const metal = METAL_BY_CODE[config.metal]!;
   const dir = path.join(ASSETS_DIR, "products", artwork, viewName);
 
-  const overlays: OverlayOptions[] = [{ input: await layer(path.join(dir, `metal-${metal.code}.png`)) }];
+  const transparent = view.background === "transparent";
+  const background = transparent ? { r: 0, g: 0, b: 0, alpha: 0 } : view.background;
+  let overlays: OverlayOptions[];
 
-  const slots = view.slotLayouts ? view.slotLayouts[String(config.stoneCount)] ?? {} : view.slots ?? {};
-  for (const [key, placement] of Object.entries(slots)) {
-    const stone = config.stones[key];
-    if (!stone) continue;
-    overlays.push(await place(path.join(dir, `setting-${metal.code}-${view.stoneShape}.png`), placement, 1.2));
-    overlays.push(await place(path.join(ASSETS_DIR, "stones", view.stoneShape, `${stone}.png`), placement));
-  }
+  if (view.nameplate) {
+    // Try-on prototype: a whole name necklace drawn from the customer's exact name.
+    const name = config.engravings[view.nameplate.textKey] ?? "";
+    overlays = [{ input: Buffer.from(necklaceSvg(name, config.font, view.nameplate, metal, view.width, view.height)) }];
+  } else {
+    overlays = [{ input: await layer(path.join(dir, `metal-${metal.code}.png`)) }];
 
-  const textSvg = Object.entries(view.engravings)
-    .map(([key, area]) => engravingSvg(config.engravings[key] ?? "", config.font, area, metal))
-    .join("");
-  if (textSvg) {
-    overlays.push({
-      input: Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${view.width}" height="${view.height}">${textSvg}</svg>`),
-    });
+    const slots = view.slotLayouts ? view.slotLayouts[String(config.stoneCount)] ?? {} : view.slots ?? {};
+    for (const [key, placement] of Object.entries(slots)) {
+      const stone = config.stones[key];
+      if (!stone) continue;
+      overlays.push(await place(path.join(dir, `setting-${metal.code}-${view.stoneShape}.png`), placement, 1.2));
+      overlays.push(await place(path.join(ASSETS_DIR, "stones", view.stoneShape, `${stone}.png`), placement));
+    }
+
+    const textSvg = Object.entries(view.engravings)
+      .map(([key, area]) => engravingSvg(config.engravings[key] ?? "", config.font, area, metal))
+      .join("");
+    if (textSvg) {
+      overlays.push({
+        input: Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${view.width}" height="${view.height}">${textSvg}</svg>`),
+      });
+    }
   }
 
   let img = sharp({
-    create: { width: view.width, height: view.height, channels: 4, background: view.background },
+    create: { width: view.width, height: view.height, channels: 4, background },
   }).composite(overlays);
 
   // Flatten composite before resizing (sharp applies resize before composite otherwise).
@@ -99,7 +110,7 @@ export async function renderDesign(
   let out = sharp(flat).resize(width);
   const format = opts.format ?? "webp";
   if (format === "webp") out = out.webp({ quality: 88 });
-  else if (format === "jpeg") out = out.flatten({ background: view.background }).jpeg({ quality: 88 });
+  else if (format === "jpeg") out = out.flatten({ background: transparent ? "#ffffff" : view.background }).jpeg({ quality: 88 });
   else out = out.png();
   return { buffer: await out.toBuffer(), contentType: `image/${format}` };
 }

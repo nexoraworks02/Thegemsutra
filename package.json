@@ -12,7 +12,7 @@
     "dev:storefront": "npm run dev -w @jemsutra/storefront",
     "dev:image": "npm run dev -w @jemsutra/image-service",
     "dev": "npm-run-all --parallel dev:image dev:storefront",
-    "test": "npm run test -w @jemsutra/design-engine",
+    "test": "npm run test -w @jemsutra/design-engine && npm run test -w @jemsutra/image-service",
     "typecheck": "npm run typecheck --workspaces --if-present"
   },
   "devDependencies": {
