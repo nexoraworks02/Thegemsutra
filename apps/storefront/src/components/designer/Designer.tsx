@@ -106,7 +106,7 @@ export function Designer({ product }: { product: ProductDef }) {
       <Gallery product={product} config={config} />
 
       <div>
-        <p className="eyebrow text-gold-dark">{product.badges?.[0] ?? "Personalized"}</p>
+        <p className="eyebrow text-rose-deep">{product.badges?.[0] ?? "Personalized"}</p>
         <h1 className="mt-2 text-3xl sm:text-4xl leading-tight">{product.name}</h1>
         <div className="mt-3 flex items-baseline gap-3">
           <span className="text-2xl font-medium">{formatMoney(price.total)}</span>
@@ -127,7 +127,7 @@ export function Designer({ product }: { product: ProductDef }) {
                     type="button"
                     onClick={() => update({ metal: m.metal })}
                     aria-pressed={active}
-                    className={`flex flex-col items-center gap-1.5 rounded-sm border p-2 text-center transition ${active ? "border-ink bg-paper" : "border-transparent hover:border-line"}`}
+                    className={`flex flex-col items-center gap-1.5 rounded-sm p-2 text-center ${active ? "option-active" : "option-quiet"}`}
                   >
                     <span className="h-10 w-10 rounded-full grid place-items-center text-[10px] font-semibold text-ink/70 border border-black/5" style={{ background: `radial-gradient(circle at 35% 30%, ${mm.highlight}, ${mm.color} 60%, ${mm.shadow})` }}>
                       {mm.shortLabel}
@@ -148,9 +148,9 @@ export function Designer({ product }: { product: ProductDef }) {
                   const active = n === config.stoneCount;
                   return (
                     <button key={n} type="button" onClick={() => update({ stoneCount: n })} aria-pressed={active}
-                      className={`min-w-16 border px-3 py-2 text-sm rounded-sm ${active ? "border-ink bg-ink text-ivory" : "border-line bg-paper hover:border-ink"}`}>
+                      className={`min-w-16 px-3 py-2 text-sm rounded-sm option ${active ? "option-active" : ""}`}>
                       {n}
-                      <span className="block text-[10px] opacity-70">{extra ? `+${formatMoney(extra)}` : "included"}</span>
+                      <span className="block text-[10px] text-muted">{extra ? `+${formatMoney(extra)}` : "included"}</span>
                     </button>
                   );
                 })}
@@ -194,7 +194,7 @@ export function Designer({ product }: { product: ProductDef }) {
                         maxLength={e.maxChars}
                         onChange={(ev) => update({ engravings: { [e.key]: ev.target.value } })}
                         placeholder={e.label}
-                        className="w-full border border-line bg-paper px-3 py-2.5 text-[15px] outline-none focus:border-ink"
+                        className="field px-3 py-2.5 text-[15px]"
                         style={{ fontFamily: FONT_FAMILY[config.font], fontStyle: config.font === "italic" ? "italic" : undefined }}
                       />
                     </label>
@@ -205,7 +205,7 @@ export function Designer({ product }: { product: ProductDef }) {
                     const active = f === config.font;
                     return (
                       <button key={f} type="button" onClick={() => update({ font: f })} aria-pressed={active}
-                        className={`border py-2 rounded-sm ${active ? "border-ink bg-paper" : "border-line hover:border-ink"}`}>
+                        className={`py-2 rounded-sm option ${active ? "option-active" : ""}`}>
                         <span className="block text-xl" style={{ fontFamily: FONT_FAMILY[f], fontStyle: f === "italic" ? "italic" : undefined }}>Abc</span>
                         <span className="block text-[10px] text-muted">{FONT_BY_CODE[f]?.name}</span>
                       </button>
@@ -221,7 +221,9 @@ export function Designer({ product }: { product: ProductDef }) {
               <select
                 value={config.size ?? ""}
                 onChange={(e) => update({ size: e.target.value ? Number(e.target.value) : undefined })}
-                className={`w-full border bg-paper px-3 py-2.5 text-[15px] ${sizeError ? "border-sale" : "border-line"}`}
+                aria-invalid={sizeError || undefined}
+                aria-label="Ring size"
+                className="field px-3 py-2.5 text-[15px]"
               >
                 <option value="">Please select your size</option>
                 {sizeOptions(product).map((s) => (
@@ -230,7 +232,7 @@ export function Designer({ product }: { product: ProductDef }) {
                   </option>
                 ))}
               </select>
-              {sizeError && <p className="mt-2 text-sm text-sale">Please select your ring size to continue.</p>}
+              {sizeError && <p role="alert" className="mt-2 text-sm text-sale">Please select your ring size to continue.</p>}
               {product.size.hint && <p className="mt-2 text-xs text-muted">{product.size.hint}. Free resizing within 30 days.</p>}
             </Step>
           )}
@@ -241,7 +243,7 @@ export function Designer({ product }: { product: ProductDef }) {
                 const active = p.code === config.packaging;
                 return (
                   <button key={p.code} type="button" onClick={() => update({ packaging: p.code })} aria-pressed={active}
-                    className={`text-left border p-3 rounded-sm ${active ? "border-ink bg-paper" : "border-line hover:border-ink"}`}>
+                    className={`text-left p-3 rounded-sm option ${active ? "option-active" : ""}`}>
                     <span className="flex justify-between text-sm font-medium"><span>{p.name}</span><span>{p.price ? formatMoney(p.price) : "Free"}</span></span>
                     {p.description && <span className="block mt-1 text-xs text-muted">{p.description}</span>}
                   </button>
@@ -254,26 +256,26 @@ export function Designer({ product }: { product: ProductDef }) {
         <PriceSummary lines={price.lines} total={price.total} />
 
         <button type="button" onClick={addToCart} disabled={saving}
-          className="mt-5 w-full bg-ink text-ivory py-4 text-[13px] tracking-[0.16em] uppercase hover:bg-gold-dark transition-colors disabled:opacity-60 disabled:cursor-wait">
+          className="btn-primary mt-5 w-full py-4 disabled:cursor-wait">
           {saving ? "Adding..." : `${editingLineId ? "Update bag item" : "Add to bag"} · ${formatMoney(price.total)}`}
         </button>
         {error && <p role="alert" className="mt-3 text-sm text-sale">{error}</p>}
 
         {added && (
-          <div role="status" className="mt-4 border border-gold/50 bg-paper p-4 flex items-center justify-between gap-4">
+          <div role="status" className="mt-4 border border-blush bg-blush-tint p-4 flex items-center justify-between gap-4">
             <p className="text-sm">{editingLineId ? "Your bag item was updated." : "Added to your bag."}</p>
             <div className="flex gap-3 text-sm">
-              <Link href="/cart" className="underline underline-offset-4">View bag</Link>
+              <Link href="/cart" className="text-rose-deep underline underline-offset-4 hover:text-ink">View bag</Link>
               <Link href="/#collection" className="text-muted underline underline-offset-4">Keep shopping</Link>
             </div>
           </div>
         )}
 
         <ul className="mt-6 grid grid-cols-2 gap-3 text-xs text-muted">
-          <li>✦ Hand-made in 5-7 days</li>
-          <li>✦ Free delivery · COD</li>
-          <li>✦ 30-day returns</li>
-          <li>✦ Free resizing</li>
+          <li><span className="text-rose" aria-hidden>✦</span> Hand-made in 5-7 days</li>
+          <li><span className="text-rose" aria-hidden>✦</span> Free delivery · COD</li>
+          <li><span className="text-rose" aria-hidden>✦</span> 30-day returns</li>
+          <li><span className="text-rose" aria-hidden>✦</span> Free resizing</li>
         </ul>
         <p className="mt-6 text-xs text-muted">
           Share your design:{" "}
@@ -282,9 +284,9 @@ export function Designer({ product }: { product: ProductDef }) {
       </div>
 
       {/* Mobile: sticky bar with live mini preview + price */}
-      <div className="lg:hidden fixed inset-x-0 bottom-0 z-30 border-t border-line bg-ivory/95 backdrop-blur px-4 py-3 flex items-center gap-3">
-        <img src={designImageUrl(product, config, { width: 120 })} alt="" className="h-12 w-16 object-cover border border-line bg-paper" />
-        <button type="button" onClick={addToCart} disabled={saving} className="flex-1 bg-ink text-ivory py-3 text-[12px] tracking-[0.14em] uppercase disabled:opacity-60">
+      <div className="lg:hidden fixed inset-x-0 bottom-0 z-30 border-t border-line bg-ivory/95 backdrop-blur shadow-soft px-4 py-3 flex items-center gap-3">
+        <img src={designImageUrl(product, config, { width: 120 })} alt="" className="h-12 w-16 object-cover tile" />
+        <button type="button" onClick={addToCart} disabled={saving} className="btn-primary flex-1 py-3 text-[12px] tracking-[0.14em]">
           {saving ? "Adding..." : `${formatMoney(price.total)} · ${editingLineId ? "Update" : "Add to bag"}`}
         </button>
       </div>
@@ -325,10 +327,10 @@ function Gallery({ product, config }: { product: ProductDef; config: DesignConfi
 
   return (
     <div className="lg:sticky lg:top-28 self-start">
-      <div className="relative aspect-[4/3] overflow-hidden rounded-sm border border-line bg-paper">
+      <div className="relative aspect-[4/3] overflow-hidden rounded-sm tile">
         <img src={shown} alt={`${product.name} - your design`} className="h-full w-full object-cover" />
         {loading && (
-          <span className="absolute right-3 top-3 h-2 w-2 rounded-full bg-gold animate-ping" aria-label="Updating preview" />
+          <span className="absolute right-3 top-3 h-2 w-2 rounded-full bg-rose animate-ping" aria-label="Updating preview" />
         )}
       </div>
       <p className="mt-3 text-center text-xs text-muted">Live preview of your design · updates as you choose</p>
@@ -356,7 +358,7 @@ function Step(props: {
           <span className={`block eyebrow ${props.error ? "text-sale" : ""}`}>{props.title}</span>
           <span className="block text-sm text-muted mt-0.5 truncate">{props.summary}</span>
         </span>
-        <span className="text-xl text-muted w-5 text-center">{isOpen ? "−" : "+"}</span>
+        <span className="text-xl text-rose-deep w-5 text-center" aria-hidden>{isOpen ? "−" : "+"}</span>
       </button>
       {isOpen && <div className="pb-5">{props.children}</div>}
     </section>
@@ -381,14 +383,14 @@ function StonePicker({ slot, value, onChange }: { slot: StoneSlotDef; value: str
       )}
       {groups.map((g) => (
         <div key={g.title} className="mb-3">
-          <p className="text-[11px] uppercase tracking-[0.14em] text-muted mb-2">{g.title}</p>
+          <p className="text-[11px] uppercase tracking-[0.14em] text-rose-deep mb-2">{g.title}</p>
           <div className="grid grid-cols-6 gap-2">
             {g.items.map((s) => {
               const price = slot.prices[s.code] ?? 0;
               const active = s.code === value;
               return (
                 <button key={s.code} type="button" onClick={() => onChange(s.code)} aria-pressed={active} title={s.name}
-                  className={`flex flex-col items-center rounded-sm border p-1 ${active ? "border-ink bg-paper" : "border-transparent hover:border-line"}`}>
+                  className={`flex flex-col items-center rounded-sm p-1 ${active ? "option-active" : "option-quiet"}`}>
                   <img src={stoneImageUrl(slot.shape, s.code, 120)} alt={s.name} className="h-9 w-9" loading="lazy" />
                   <span className="text-[10px] text-muted">{price ? `+${Math.round(price / 100) / 10}k` : "incl."}</span>
                 </button>
@@ -403,7 +405,7 @@ function StonePicker({ slot, value, onChange }: { slot: StoneSlotDef; value: str
 
 function PriceSummary({ lines, total }: { lines: { label: string; detail: string; amount: number }[]; total: number }) {
   return (
-    <details className="mt-6 bg-paper border border-line p-4 text-sm">
+    <details className="mt-6 bg-paper border border-line p-4 text-sm open:shadow-soft">
       <summary className="cursor-pointer flex justify-between">
         <span>Price breakdown</span>
         <span className="font-medium">{formatMoney(total)}</span>
@@ -411,7 +413,7 @@ function PriceSummary({ lines, total }: { lines: { label: string; detail: string
       <ul className="mt-3 space-y-1.5">
         {lines.map((l) => (
           <li key={l.label + l.detail} className="flex justify-between gap-4 text-muted">
-            <span>{l.label} <span className="text-ink/70">· {l.detail}</span></span>
+            <span>{l.label} <span className="text-ink">· {l.detail}</span></span>
             <span className="text-ink">{formatMoney(l.amount)}</span>
           </li>
         ))}

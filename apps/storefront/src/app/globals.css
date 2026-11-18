@@ -1,28 +1,48 @@
 @import "tailwindcss";
 
-/* THEJEMSUTRA - premium / minimal: ivory, ink, antique gold */
+/*
+ * THEJEMSUTRA - premium blush & warm beige.
+ * Ivory and beige carry the page, espresso carries text and primary actions,
+ * blush / rose are deliberate accents. Contrast notes are WCAG ratios on ivory.
+ * Jewelry colours (metals, stones, renders) never come from these tokens.
+ */
 :root {
-  --ivory: #faf7f2;
-  --paper: #ffffff;
-  --sand: #f1ece3;
-  --line: #e6dfd3;
-  --ink: #1c1a17;
-  --muted: #6f685e;
-  --gold: #a98450;
-  --gold-dark: #8a6a3d;
-  --sale: #a8402f;
+  --ivory: #fffaf6; /* page background */
+  --paper: #ffffff; /* cards, form fields */
+  --sand: #f5e8da; /* warm beige: footer, bands, skeletons */
+  --blush-tint: #faefef; /* selected options, soft highlights */
+  --blush: #e8b4b8; /* decorative accent only - espresso text on it (7.0:1) */
+  --rose: #b77983; /* large text (>=24px) and icons only (3.3:1) */
+  --rose-deep: #8e5560; /* small accent text, links, hover (5.6:1) */
+  --ink: #3e3030; /* espresso: headings, body, primary buttons (12.1:1) */
+  --muted: #6e5e58; /* secondary text (6.0:1; 5.1:1 on beige) */
+  --line: #e2cfc3; /* decorative hairlines */
+  --line-strong: #a0877f; /* form field boundaries (3:1) */
+  --sale: #a13d3d; /* sale prices, errors (6.2:1) */
+  /* Product image tiles match the rendered images' own background (#f7f4ef) so
+     framed renders look intentional on ivory. Do not change the image service. */
+  --tile: #f7f4ef;
 }
 
 @theme inline {
   --color-ivory: var(--ivory);
   --color-paper: var(--paper);
   --color-sand: var(--sand);
+  --color-blush-tint: var(--blush-tint);
+  --color-blush: var(--blush);
+  --color-rose: var(--rose);
+  --color-rose-deep: var(--rose-deep);
   --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
   --color-ink: var(--ink);
   --color-muted: var(--muted);
-  --color-gold: var(--gold);
-  --color-gold-dark: var(--gold-dark);
   --color-sale: var(--sale);
+  --color-tile: var(--tile);
+  /* Temporary aliases for the previous gold accent (still used by the
+     developer try-on page). Remove once nothing references them. */
+  --color-gold: var(--rose);
+  --color-gold-dark: var(--rose-deep);
+  --shadow-soft: 0 1px 2px rgb(62 48 48 / 0.04), 0 10px 30px -14px rgb(62 48 48 / 0.16);
   --font-serif: "Playfair Display", Georgia, serif;
   --font-sans: "Montserrat", system-ui, sans-serif;
   --font-script: "Great Vibes", cursive;
@@ -43,11 +63,126 @@ h1, h2, h3, .font-serif {
   font-family: var(--font-serif);
 }
 
+::selection {
+  background: var(--blush);
+  color: var(--ink);
+}
+
+/* One consistent, visible keyboard focus ring everywhere. */
+:focus-visible {
+  outline: 2px solid var(--rose-deep);
+  outline-offset: 2px;
+}
+
 .eyebrow {
   font-size: 0.7rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   font-weight: 600;
+}
+
+@layer components {
+  /* Primary action: espresso, deep rose on hover. */
+  .btn-primary {
+    display: inline-block;
+    text-align: center;
+    background: var(--ink);
+    color: var(--ivory);
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+  }
+  .btn-primary:hover {
+    background: var(--rose-deep);
+  }
+  .btn-primary:active {
+    transform: translateY(1px);
+  }
+  .btn-primary:disabled,
+  .btn-primary[aria-disabled="true"] {
+    background: var(--ink);
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* Secondary action: espresso outline. */
+  .btn-secondary {
+    display: inline-block;
+    text-align: center;
+    border: 1px solid var(--ink);
+    color: var(--ink);
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  .btn-secondary:hover {
+    background: var(--ink);
+    color: var(--ivory);
+  }
+  .btn-secondary:active {
+    transform: translateY(1px);
+  }
+
+  /* Form fields: 3:1 boundary, espresso + rose ring on focus, red on error. */
+  .field {
+    width: 100%;
+    border: 1px solid var(--line-strong);
+    background: var(--paper);
+    color: var(--ink);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .field::placeholder {
+    color: var(--muted);
+    opacity: 0.8;
+  }
+  .field:focus {
+    outline: none;
+    border-color: var(--ink);
+    box-shadow: 0 0 0 3px var(--blush-tint), 0 0 0 4px var(--rose);
+  }
+  .field[aria-invalid="true"],
+  .field-error,
+  .field-error:focus {
+    border-color: var(--sale);
+  }
+  .field:disabled {
+    background: var(--sand);
+    color: var(--muted);
+  }
+
+  /* Selectable option (metal, stone, font, packaging, delivery).
+     Selected = espresso double-weight border + blush tint, so it is
+     recognisable by shape, not only by colour. */
+  .option {
+    border: 1px solid var(--line);
+    background: var(--paper);
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+  }
+  .option:hover {
+    border-color: var(--rose);
+  }
+  .option-quiet {
+    border: 1px solid transparent;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+  }
+  .option-quiet:hover {
+    border-color: var(--line);
+  }
+  .option-active,
+  .option-active:hover {
+    border-color: var(--ink);
+    box-shadow: inset 0 0 0 1px var(--ink);
+    background: var(--blush-tint);
+  }
+
+  /* Framed product image tile. */
+  .tile {
+    background: var(--tile);
+    border: 1px solid var(--line);
+  }
 }
 
 @keyframes marquee {
@@ -59,4 +194,5 @@ h1, h2, h3, .font-serif {
 }
 @media (prefers-reduced-motion: reduce) {
   .marquee-track { animation: none; }
+  .btn-primary, .btn-secondary, .field, .option, .option-quiet { transition: none; }
 }

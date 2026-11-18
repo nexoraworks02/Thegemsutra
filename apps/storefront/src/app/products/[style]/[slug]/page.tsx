@@ -65,7 +65,7 @@ async function ProductContent({ params }: { params: PageProps<"/products/[style]
   return (
     <>
       <nav aria-label="Breadcrumb" className="text-xs text-muted mb-6">
-        <Link href="/" className="hover:text-ink">Home</Link> / <Link href="/#collection" className="hover:text-ink">{{ ring: "Rings", necklace: "Necklaces", bracelet: "Bracelets", earring: "Earrings" }[product.type]}</Link> /{" "}
+        <Link href="/" className="hover:text-rose-deep">Home</Link> / <Link href="/#collection" className="hover:text-rose-deep">{{ ring: "Rings", necklace: "Necklaces", bracelet: "Bracelets", earring: "Earrings" }[product.type]}</Link> /{" "}
         <span className="text-ink">{product.name}</span>
       </nav>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
@@ -79,7 +79,7 @@ async function ProductContent({ params }: { params: PageProps<"/products/[style]
 function DesignerFallback({ name }: { name?: string }) {
   return (
     <div className="grid gap-10 lg:grid-cols-[1.25fr_1fr]">
-      <div className="aspect-[4/3] rounded-sm border border-line bg-paper animate-pulse" />
+      <div className="aspect-[4/3] rounded-sm tile animate-pulse" />
       <div>
         {name ? <h1 className="text-3xl sm:text-4xl">{name}</h1> : <div className="h-10 w-2/3 bg-sand animate-pulse rounded-sm" />}
         <div className="mt-6 space-y-3">

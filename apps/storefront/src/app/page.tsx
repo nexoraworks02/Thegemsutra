@@ -34,19 +34,19 @@ export default async function HomePage() {
     <>
       <section className="mx-auto max-w-7xl px-4 sm:px-6 pt-10 pb-16 grid gap-10 lg:grid-cols-2 items-center">
         <div>
-          <p className="eyebrow text-gold-dark">Personalized fine jewelry</p>
+          <p className="eyebrow text-rose-deep">Personalized fine jewelry</p>
           <h1 className="mt-4 text-4xl sm:text-6xl leading-[1.05]">
-            Jewelry that <em className="text-gold-dark">tells your story</em>
+            Jewelry that <em className="text-rose">tells your story</em>
           </h1>
           <p className="mt-6 max-w-md text-muted leading-relaxed">
             Choose the metal, the birthstones and the words. See your design come to life as you create it - then
             our artisans hand-make it, just for you.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link href={productPath(hero)} className="bg-ink text-ivory px-7 py-3.5 text-[13px] tracking-[0.16em] uppercase hover:bg-gold-dark transition-colors">
+            <Link href={productPath(hero)} className="btn-primary px-7 py-3.5">
               Start designing
             </Link>
-            <Link href="#collection" className="border border-ink px-7 py-3.5 text-[13px] tracking-[0.16em] uppercase hover:bg-ink hover:text-ivory transition-colors">
+            <Link href="#collection" className="btn-secondary px-7 py-3.5">
               Shop the collection
             </Link>
           </div>
@@ -56,31 +56,31 @@ export default async function HomePage() {
           <img
             src={designImageUrl(hero, heroConfig, { width: 1200 })}
             alt="Twin Hearts ring in 14K yellow gold with ruby and sapphire, engraved Ayesha and Hamza"
-            className="w-full rounded-sm border border-line bg-paper"
+            className="w-full rounded-sm tile shadow-soft"
           />
-          <p className="absolute bottom-4 left-4 bg-paper/90 px-3 py-2 text-xs text-muted">
+          <p className="absolute bottom-4 left-4 bg-ivory/90 border border-line px-3 py-2 text-xs text-muted">
             Live preview · 14K gold · Ruby & Sapphire · &ldquo;Ayesha&rdquo; & &ldquo;Hamza&rdquo;
           </p>
         </div>
       </section>
 
-      <div className="border-y border-line bg-sand/50 overflow-hidden" aria-label="Our promise">
+      <div className="border-y border-line bg-sand overflow-hidden" aria-label="Our promise">
         <div className="marquee-track flex w-max gap-12 py-3 text-[12px] tracking-[0.18em] uppercase">
           {[...TRUST, ...TRUST].map((t, i) => (
             <span key={i} className="flex items-center gap-12">
-              {t} <span className="text-gold">◆</span>
+              {t} <span className="text-rose" aria-hidden>◆</span>
             </span>
           ))}
         </div>
       </div>
 
       <section className="mx-auto max-w-7xl px-4 sm:px-6 py-20">
-        <p className="eyebrow text-gold-dark text-center">How it works</p>
+        <p className="eyebrow text-rose-deep text-center">How it works</p>
         <h2 className="mt-3 text-3xl sm:text-4xl text-center">Designed by you, made by hand</h2>
         <div className="mt-12 grid gap-8 sm:grid-cols-3">
           {STEPS.map((s) => (
-            <div key={s.n} className="border-t border-ink pt-6">
-              <p className="font-serif text-gold text-2xl">{s.n}</p>
+            <div key={s.n} className="border-t border-blush pt-6">
+              <p className="font-serif text-rose text-3xl">{s.n}</p>
               <h3 className="mt-2 text-xl">{s.title}</h3>
               <p className="mt-2 text-muted text-sm leading-relaxed">{s.text}</p>
             </div>
@@ -91,7 +91,7 @@ export default async function HomePage() {
       <section id="collection" className="mx-auto max-w-7xl px-4 sm:px-6 scroll-mt-28">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <p className="eyebrow text-gold-dark">The collection</p>
+            <p className="eyebrow text-rose-deep">The collection</p>
             <h2 className="mt-3 text-3xl sm:text-4xl">Start with a design you love</h2>
           </div>
           <p className="hidden sm:block text-sm text-muted">{designs.length} designs</p>

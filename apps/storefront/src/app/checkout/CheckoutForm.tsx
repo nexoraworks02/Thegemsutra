@@ -62,7 +62,7 @@ export function CheckoutForm() {
     return (
       <div className="mt-10 border border-line bg-paper p-10 text-center">
         <p className="text-muted">Your bag is empty.</p>
-        <Link href="/#collection" className="mt-6 inline-block bg-ink text-ivory px-7 py-3 text-[13px] tracking-[0.16em] uppercase">Start designing</Link>
+        <Link href="/#collection" className="btn-primary mt-6 px-7 py-3">Start designing</Link>
       </div>
     );
   }
@@ -134,7 +134,7 @@ export function CheckoutForm() {
     <form onSubmit={placeOrder} noValidate className="mt-8 grid gap-10 lg:grid-cols-[1fr_360px]">
       <div className="space-y-10">
         <fieldset>
-          <legend className="eyebrow mb-4">1 · Contact</legend>
+          <legend className="eyebrow text-rose-deep mb-4">1 · Contact</legend>
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Email" error={errors.email} className="sm:col-span-2">
               <input type="email" autoComplete="email" value={form.email} onChange={set("email")} className={input(errors.email)} />
@@ -146,7 +146,7 @@ export function CheckoutForm() {
         </fieldset>
 
         <fieldset>
-          <legend className="eyebrow mb-4">2 · Delivery address</legend>
+          <legend className="eyebrow text-rose-deep mb-4">2 · Delivery address</legend>
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="First name" error={errors.first_name}>
               <input autoComplete="given-name" value={form.first_name} onChange={set("first_name")} className={input(errors.first_name)} />
@@ -172,17 +172,17 @@ export function CheckoutForm() {
               <input autoComplete="postal-code" inputMode="numeric" value={form.postal_code} onChange={set("postal_code")} className={input()} />
             </Field>
             <Field label="Country">
-              <input value="Pakistan" disabled className={`${input()} text-muted`} />
+              <input value="Pakistan" disabled className={input()} />
             </Field>
           </div>
         </fieldset>
 
         <fieldset>
-          <legend className="eyebrow mb-4">3 · Delivery</legend>
+          <legend className="eyebrow text-rose-deep mb-4">3 · Delivery</legend>
           <div className="space-y-2">
             {options.length === 0 && <p className="text-sm text-muted">Loading delivery options...</p>}
             {options.map((o) => (
-              <label key={o.id} className={`flex items-start gap-3 border p-4 cursor-pointer rounded-sm ${optionId === o.id ? "border-ink bg-paper" : "border-line"}`}>
+              <label key={o.id} className={`flex items-start gap-3 p-4 cursor-pointer rounded-sm option ${optionId === o.id ? "option-active" : ""}`}>
                 <input type="radio" name="shipping" checked={optionId === o.id} onChange={() => setOptionId(o.id)} className="mt-1 accent-[var(--ink)]" />
                 <span className="flex-1">
                   <span className="flex justify-between text-sm font-medium"><span>{o.name}</span><span>{o.amount ? formatMoney(o.amount) : "Free"}</span></span>
@@ -195,8 +195,8 @@ export function CheckoutForm() {
         </fieldset>
 
         <fieldset>
-          <legend className="eyebrow mb-4">4 · Payment</legend>
-          <label className="flex items-start gap-3 border border-ink bg-paper p-4 rounded-sm">
+          <legend className="eyebrow text-rose-deep mb-4">4 · Payment</legend>
+          <label className="flex items-start gap-3 p-4 rounded-sm option option-active">
             <input type="radio" checked readOnly className="mt-1 accent-[var(--ink)]" />
             <span>
               <span className="block text-sm font-medium">Cash on delivery</span>
@@ -206,13 +206,13 @@ export function CheckoutForm() {
         </fieldset>
       </div>
 
-      <aside className="border border-line bg-paper p-5 h-fit lg:sticky lg:top-28">
-        <h2 className="eyebrow">Your order</h2>
+      <aside className="border border-line bg-paper shadow-soft p-5 h-fit lg:sticky lg:top-28">
+        <h2 className="eyebrow text-rose-deep">Your order</h2>
         <ul className="mt-4 space-y-4">
           {cart.items.map((i) => (
             <li key={i.id} className="flex gap-3">
               {/* eslint-disable-next-line @next/next/no-img-element -- rendered by the image service */}
-              <img src={i.metadata?.image_url ?? i.thumbnail ?? ""} alt="" className="h-14 w-20 object-cover border border-line bg-ivory" />
+              <img src={i.metadata?.image_url ?? i.thumbnail ?? ""} alt="" className="h-14 w-20 object-cover tile" />
               <div className="flex-1 text-sm">
                 <p className="font-serif">{i.product_title ?? i.title}</p>
                 <p className="text-xs text-muted">{i.metadata?.design_summary?.find(([k]) => k === "Metal")?.[1] ?? i.variant_title}</p>
@@ -228,7 +228,7 @@ export function CheckoutForm() {
         </dl>
         {failure && <p role="alert" className="mt-4 text-sm text-sale">{failure}</p>}
         <button type="submit" disabled={placing}
-          className="mt-5 w-full bg-ink text-ivory py-4 text-[13px] tracking-[0.16em] uppercase hover:bg-gold-dark transition-colors disabled:opacity-60 disabled:cursor-wait">
+          className="btn-primary mt-5 w-full py-4 disabled:cursor-wait">
           {placing ? "Placing your order..." : `Place order · ${formatMoney(itemsTotal + shipping)}`}
         </button>
         <p className="mt-3 text-xs text-muted">By placing your order you agree to our terms. 30-day returns · 1-year warranty.</p>
@@ -238,7 +238,7 @@ export function CheckoutForm() {
 }
 
 function input(error?: string) {
-  return `w-full border bg-paper px-3 py-2.5 text-[15px] outline-none focus:border-ink ${error ? "border-sale" : "border-line"}`;
+  return `field px-3 py-2.5 text-[15px] ${error ? "field-error" : ""}`;
 }
 
 function Field({ label, error, hint, className, children }: { label: string; error?: string; hint?: string; className?: string; children: React.ReactNode }) {

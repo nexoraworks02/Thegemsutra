@@ -29,7 +29,7 @@ export function ProductCard({ product }: { product: ProductDef }) {
 
   return (
     <Link href={productPath(product, config)} className="group block">
-      <div className="relative aspect-[4/3] overflow-hidden rounded-sm bg-paper border border-line">
+      <div className="relative aspect-[4/3] overflow-hidden rounded-sm tile transition-shadow duration-300 group-hover:shadow-soft">
         {/* eslint-disable-next-line @next/next/no-img-element -- images are rendered + sized by the image service */}
         <img
           src={designImageUrl(product, config, { width: 600 })}
@@ -38,7 +38,7 @@ export function ProductCard({ product }: { product: ProductDef }) {
           loading="lazy"
         />
         {product.badges?.[0] && (
-          <span className="absolute left-3 top-3 bg-paper/90 px-2 py-1 eyebrow text-[10px]">{product.badges[0]}</span>
+          <span className="absolute left-3 top-3 bg-blush-tint/95 text-rose-deep px-2 py-1 eyebrow text-[10px]">{product.badges[0]}</span>
         )}
       </div>
       <div className="mt-3 flex gap-1.5">
@@ -51,7 +51,7 @@ export function ProductCard({ product }: { product: ProductDef }) {
           />
         ))}
       </div>
-      <h3 className="mt-2 font-serif text-lg leading-snug group-hover:text-gold-dark transition-colors">{product.name}</h3>
+      <h3 className="mt-2 font-serif text-lg leading-snug group-hover:text-rose-deep transition-colors">{product.name}</h3>
       <p className="mt-1 text-sm">
         <span>from {formatMoney(price)}</span>
         {compare && <span className="ml-2 text-muted line-through">{formatMoney(compare)}</span>}

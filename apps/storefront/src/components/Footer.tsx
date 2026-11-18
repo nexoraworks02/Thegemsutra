@@ -1,6 +1,6 @@
 export function Footer() {
   return (
-    <footer className="mt-24 border-t border-line bg-sand/60">
+    <footer className="mt-24 border-t border-line bg-sand">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-12 grid gap-10 sm:grid-cols-3 text-sm">
         <div>
           <p className="font-serif text-lg tracking-[0.16em]">THEJEMSUTRA</p>
@@ -9,7 +9,7 @@ export function Footer() {
           </p>
         </div>
         <div>
-          <p className="eyebrow text-muted">Our promise</p>
+          <p className="eyebrow text-rose-deep">Our promise</p>
           <ul className="mt-3 space-y-2">
             <li>Made to order in 5-7 days</li>
             <li>Free delivery & cash on delivery</li>
@@ -18,7 +18,7 @@ export function Footer() {
           </ul>
         </div>
         <div>
-          <p className="eyebrow text-muted">Help</p>
+          <p className="eyebrow text-rose-deep">Help</p>
           <ul className="mt-3 space-y-2">
             <li>Ring size guide</li>
             <li>Shipping & returns</li>
@@ -26,7 +26,7 @@ export function Footer() {
           </ul>
         </div>
       </div>
-      <p className="text-center text-xs text-muted pb-8">© THEJEMSUTRA · All rights reserved</p>
+      <p className="mx-auto max-w-7xl border-t border-line pt-6 text-center text-xs text-muted pb-8">© THEJEMSUTRA · All rights reserved</p>
     </footer>
   );
 }
