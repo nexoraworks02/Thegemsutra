@@ -9,8 +9,8 @@ import {
   NO_ADJUSTMENT,
   adjustReducer,
   applyAdjustments,
+  chooseSubject,
   configToQuery,
-  estimateNeckline,
   fallbackPlacement,
   necklaceMatrix,
   normalizeConfig,
@@ -21,7 +21,7 @@ import {
   type PlacementTransform,
 } from "@jemsutra/design-engine";
 import { IMAGE_URL } from "@/lib/media";
-import { detectPose, loadPoseLandmarker } from "./pose";
+import { detectPoses, loadPoseLandmarker } from "./pose";
 
 const PRODUCT = DEMO_PRODUCT_BY_STYLE["JSN900"]!;
 const MAX_SIDE = 1600; // photos are downscaled on the device before detection
@@ -111,23 +111,38 @@ export function TryOnLab() {
 
   const detect = useCallback(async () => {
     if (!photo || !scaledAnchors) return;
+    // Nothing is drawn until we know where the neck is (never on top of a face).
+    setAuto(null);
+    setEstimate(null);
     setStatus({ kind: "loading", text: "Finding your neckline (first time loads the pose model)..." });
     try {
-      const { landmarks, delegate, ms } = await detectPose(photo);
-      const est = landmarks ? estimateNeckline(landmarks, photo) : null;
-      setEstimate(est);
-      if (est) {
-        setAuto(placeNecklace(est, scaledAnchors));
-        setStatus({ kind: "ok", text: `Necklace placed automatically (confidence ${Math.round(est.confidence * 100)}%, ${delegate}, ${ms} ms). Drag or use the sliders to fine-tune.` });
+      const { poses, delegate, ms } = await detectPoses(photo);
+      const subject = chooseSubject(poses, photo);
+      const size = `subject ${Math.round(subject.subjectFraction * 100)}% of photo, ${subject.people} ${subject.people === 1 ? "person" : "people"}, ${delegate}, ${ms} ms`;
+      if (subject.estimate) {
+        setEstimate(subject.estimate);
+        setAuto(placeNecklace(subject.estimate, scaledAnchors));
+        setStatus({ kind: "ok", text: `Necklace placed automatically (confidence ${Math.round(subject.estimate.confidence * 100)}%, ${size}). Drag or use the sliders to fine-tune.` });
       } else {
-        setAuto(fallbackPlacement(photo, scaledAnchors));
-        setStatus({ kind: "warn", text: "Couldn't find both shoulders - placed in the centre. Use a front-facing photo showing your shoulders, or adjust by hand." });
+        const why =
+          subject.issue === "multiple-people"
+            ? "There seems to be more than one person in this photo. Please use a photo of just you."
+            : subject.issue === "too-small"
+              ? "You look quite small in this photo. Please use a closer photo of just you, with your shoulders visible."
+              : "We couldn't find your shoulders. Please use a front-facing photo showing your neck and shoulders.";
+        setStatus({ kind: "warn", text: `${why} Or place the necklace by hand. (${size})` });
       }
     } catch (e) {
-      setAuto(fallbackPlacement(photo, scaledAnchors));
       setStatus({ kind: "error", text: `Pose detection failed to load (${(e as Error).message}). You can still place the necklace by hand.` });
     }
   }, [photo, scaledAnchors]);
+
+  const placeByHand = () => {
+    if (!photo || !scaledAnchors) return;
+    dispatch({ type: "reset" });
+    setAuto(fallbackPlacement(photo, scaledAnchors));
+    setStatus({ kind: "warn", text: "Placed for manual positioning. Drag it onto your neckline and use the sliders to fit." });
+  };
 
   useEffect(() => {
     detect();
@@ -251,6 +266,9 @@ export function TryOnLab() {
           </label>
           {photo && (
             <button type="button" onClick={detect} className="ml-2 text-xs underline underline-offset-4">Re-detect</button>
+          )}
+          {photo && scaledAnchors && !auto && status.kind !== "loading" && (
+            <button type="button" onClick={placeByHand} className="ml-2 text-xs underline underline-offset-4">Place by hand</button>
           )}
         </section>
 

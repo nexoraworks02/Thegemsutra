@@ -14,7 +14,9 @@ The readiness scores in the review added up to **2.5 / 10, not 3.5 / 10**. The f
 | Landmarks | **MediaPipe Pose Landmarker (lite) only** | Shoulders + nose + mouth are enough for the neckline. Face Landmarker not needed (smaller download). |
 | Physical size | **Approximate**: neck width estimated as a configurable fraction of shoulder width (`DEFAULT_NECKLINE`) + manual size/position/rotation | A photo has no reliable real-world scale. Labelled "approximate" in the UI. |
 | Processing location | **Entirely in the browser** | The selfie is never uploaded. Only the public pose model is downloaded. |
-| GPU | Tries `GPU`, **falls back to `CPU`** automatically | No GPU / frame-rate assumptions. Benchmark real phones in the live-camera phase. |
+| Delegate | Photo mode uses **`CPU`**, falls back to `GPU` | Measured: the first GPU detection takes 1-10.5 s (shader compile) vs ~0.4 s on CPU, with similar per-photo speed. GPU is for the future live camera; benchmark real phones then. |
+| Who gets the necklace | Up to 3 people detected; the **largest** is used, and automatic placement is **refused** if that person's shoulders are under 18% of the photo's shorter side, or a second person is at least 60% their size (`DEFAULT_SUBJECT_RULES`, `chooseSubject`) | A small background person was chosen in a group selfie. Accepted photos measured 28-78%; the rejected group selfie 11%. |
+| No suitable person | **Nothing is drawn**; the customer is asked for a better photo or can click **Place by hand** (starts lower-centre) | The old centred fallback drew the necklace over faces on tight crops. |
 | Isolation | Demo design `JSN900` is **not** in `PRODUCTS`, not in the database, not in the store | Served by the image service only when `ENABLE_TRYON_DEMO=true`; page `/dev/try-on` is 404 in production builds unless enabled. |
 
 ## What was built
@@ -61,6 +63,18 @@ Photos that work best: front-facing, shoulders visible, neck uncovered, reasonab
 - **Smoke test, 6 public-domain NASA portraits** (stored outside the repo): pose detected in **6/6** (confidence 98-100%). Placement good on 5/6; on a wider full-length framing the plate sat lower than ideal (fixed with the Move controls). Includes two bulky spacesuits and a group photo (placed on the front person).
 - **Speed (this desktop, GPU):** first detection ~10.5 s (one-time model + GPU warm-up), then **78-109 ms** per photo. Not representative of phones.
 
+## Verification fixes (2026-11-18)
+
+Found in the Phase 0 verification on 13 everyday openly licensed portraits plus the 6 NASA portraits, then fixed:
+
+| Defect | Fix | Re-test (21 photos) |
+|---|---|---|
+| Group photo: necklace placed on a small background person | `chooseSubject` size and crowd rules | Group selfie now rejected ("use a photo of just you"); NASA group photo also rejected (largest person 16%, two people found) |
+| Fallback drew the necklace over faces | No automatic drawing; optional **Place by hand** | 3 face crops + the no-person photo: nothing drawn, clear message |
+| Slow first detection on GPU | CPU delegate for photos | First result **~335 ms** after a fresh page load (detection 259 ms), then 62-341 ms per photo |
+
+All 15 previously auto-placed single-person photos are still placed automatically. Tests: 46 (38 engine incl. 5 new `chooseSubject` cases, 8 image service).
+
 ## Temporary assets to replace with CAD-derived renders
 
 | Temporary | Replace with |
@@ -81,7 +95,8 @@ The **name itself is already production-accurate**: it is drawn from the real fo
 - No lighting match: the metal does not pick up the photo's light or colour cast.
 - Plate drop is a fixed fraction of the estimated neck width, so on some framings it sits too low or high; chain-length options don't exist yet.
 - Size is approximate; no real-world calibration.
-- One person per photo (the most prominent pose is used).
+- One person per photo: group photos and very small subjects are refused for automatic placement (manual placement still possible).
+- "Place by hand" on a photo with no visible neck still starts on the lower part of the face; the customer has to move it.
 - The pose model is loaded from Google model storage by default (set `NEXT_PUBLIC_POSE_MODEL_URL` to self-host).
 - Smoke-test portraits are mostly uniforms/spacesuits; real selfies with open necklines and varied skin tones, lighting and ages still need a broader test set.
 - No live camera, no 3D, no checkout integration (by design for Phase 0).

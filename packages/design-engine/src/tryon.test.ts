@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   ADJUST_LIMITS,
   DEFAULT_NECKLINE,
+  DEFAULT_SUBJECT_RULES,
   DEMO_PRODUCT_BY_STYLE,
   NO_ADJUSTMENT,
   PRODUCTS,
@@ -9,6 +10,7 @@ import {
   adjustReducer,
   applyAdjustments,
   applyMatrix,
+  chooseSubject,
   estimateNeckline,
   fallbackPlacement,
   necklaceMatrix,
@@ -119,10 +121,54 @@ describe("placement and canvas matrix", () => {
     }
   });
 
-  it("falls back to a centred placement inside the photo", () => {
+  it("starts manual placement centred in the lower part of the photo (not over the face)", () => {
     const t = fallbackPlacement({ width: 1000, height: 1300 }, anchors);
     expect(t.x).toBe(500);
+    expect(t.y).toBeGreaterThan(1300 * 0.6);
     expect(t.scale * 800).toBeCloseTo(220, 6);
+  });
+});
+
+describe("chooseSubject", () => {
+  // A small person in the background of a group selfie: shoulders 11% of the width (measured case).
+  const background = portrait({ ls: [0.3, 0.45], rs: [0.19, 0.45], nose: [0.245, 0.3], mouth: [0.245, 0.35] });
+  const groupImage = { width: 1600, height: 1200 };
+
+  it("accepts a single, clearly visible person", () => {
+    for (const { image, lm } of [FIXTURES.frontalPortrait, FIXTURES.smallSubjectLandscape, FIXTURES.closeCropChin]) {
+      const r = chooseSubject([lm], image);
+      expect(r.issue).toBeNull();
+      expect(r.estimate).toEqual(estimateNeckline(lm, image));
+    }
+  });
+
+  it("rejects a person who is small in the frame (likely a background person)", () => {
+    const r = chooseSubject([background], groupImage);
+    expect(r.issue).toBe("too-small");
+    expect(r.estimate).toBeNull();
+    expect(r.subjectFraction).toBeCloseTo((0.11 * 1600) / 1200, 6);
+    expect(r.subjectFraction).toBeLessThan(DEFAULT_SUBJECT_RULES.minShoulderFraction);
+  });
+
+  it("uses the largest person when the others are much smaller", () => {
+    const front = portrait({ ls: [0.75, 0.8], rs: [0.35, 0.8], nose: [0.55, 0.45], mouth: [0.55, 0.55] });
+    const r = chooseSubject([background, front], groupImage);
+    expect(r.issue).toBeNull();
+    expect(r.people).toBe(2);
+    expect(r.estimate!.shoulderWidth).toBeCloseTo(0.4 * 1600, 6);
+  });
+
+  it("refuses automatic placement when two people are a similar size", () => {
+    const a = portrait({ ls: [0.45, 0.7], rs: [0.15, 0.7], nose: [0.3, 0.4], mouth: [0.3, 0.48] });
+    const b = portrait({ ls: [0.85, 0.7], rs: [0.57, 0.7], nose: [0.71, 0.4], mouth: [0.71, 0.48] });
+    const r = chooseSubject([a, b], groupImage);
+    expect(r.issue).toBe("multiple-people");
+    expect(r.estimate).toBeNull();
+  });
+
+  it("reports when nobody with visible shoulders is found", () => {
+    expect(chooseSubject([], groupImage)).toEqual({ estimate: null, issue: "not-found", subjectFraction: 0, people: 0 });
+    expect(chooseSubject([FIXTURES.shouldersHidden.lm], FIXTURES.shouldersHidden.image).issue).toBe("not-found");
   });
 });
 

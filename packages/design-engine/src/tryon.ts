@@ -112,6 +112,62 @@ export function estimateNeckline(
   };
 }
 
+// ---- Choosing who to place the necklace on ----
+
+/** Rules for accepting a detected person for automatic placement. */
+export interface SubjectRules {
+  /**
+   * Smallest accepted shoulder width as a fraction of the photo's SHORTER side.
+   * Close-ups and half-body selfies are ~0.4-0.9, a full-length standing photo
+   * ~0.25-0.3; a small background person in a group shot is ~0.1-0.15.
+   */
+  minShoulderFraction: number;
+  /** A second person at least this fraction of the largest one's size means "more than one person". */
+  crowdRatio: number;
+}
+
+export const DEFAULT_SUBJECT_RULES: SubjectRules = { minShoulderFraction: 0.18, crowdRatio: 0.6 };
+
+export type SubjectIssue = "not-found" | "too-small" | "multiple-people";
+
+export interface SubjectResult {
+  /** The neckline to use for automatic placement, or null when it shouldn't be placed automatically. */
+  estimate: NecklineEstimate | null;
+  issue: SubjectIssue | null;
+  /** Largest person's shoulder width / shorter photo side (0 when nobody was found). For diagnostics. */
+  subjectFraction: number;
+  /** Number of people with visible shoulders. */
+  people: number;
+}
+
+/**
+ * Pick the person to place the necklace on from all detected poses.
+ * Uses the largest person, and refuses automatic placement when that person is
+ * too small in the frame (likely a background person) or when another person of
+ * similar size is present (we can't know who the customer is).
+ */
+export function chooseSubject(
+  poses: PoseLandmark[][],
+  image: { width: number; height: number },
+  rules: SubjectRules = DEFAULT_SUBJECT_RULES,
+  cfg: NecklineConfig = DEFAULT_NECKLINE,
+): SubjectResult {
+  const found = poses
+    .map((lm) => estimateNeckline(lm, image, cfg))
+    .filter((e): e is NecklineEstimate => e !== null)
+    .sort((a, b) => b.shoulderWidth - a.shoulderWidth);
+  const main = found[0];
+  if (!main) return { estimate: null, issue: "not-found", subjectFraction: 0, people: 0 };
+  const subjectFraction = main.shoulderWidth / Math.min(image.width, image.height);
+  const base = { subjectFraction, people: found.length };
+  if (subjectFraction < rules.minShoulderFraction) return { estimate: null, issue: "too-small", ...base };
+  const second = found[1];
+  if (second && second.shoulderWidth >= rules.crowdRatio * main.shoulderWidth) {
+    return { estimate: null, issue: "multiple-people", ...base };
+  }
+  return { estimate: main, issue: null, ...base };
+}
+
 /** Necklace image geometry, from the image service (/tryon-meta). */
 export interface NecklaceAnchors {
   width: number;
@@ -142,10 +198,15 @@ export function placeNecklace(est: NecklineEstimate, anchors: NecklaceAnchors): 
   };
 }
 
-/** Default placement when no person is detected: centred, upper-middle of the photo. */
+/**
+ * Starting point for MANUAL placement, used only when the customer asks to place
+ * the necklace by hand (never drawn automatically when nobody suitable was found).
+ * Lower centre of the photo, where the neckline usually is, not the upper middle
+ * where a face usually is.
+ */
 export function fallbackPlacement(image: { width: number; height: number }, anchors: NecklaceAnchors): PlacementTransform {
   const span = dist(anchors.neckLeft, anchors.neckRight);
-  return { x: image.width / 2, y: image.height * 0.42, scale: (image.width * 0.22) / span, rotation: 0 };
+  return { x: image.width / 2, y: image.height * 0.72, scale: (Math.min(image.width, image.height) * 0.22) / span, rotation: 0 };
 }
 
 // ---- Manual adjustments (state handled by a reducer) ----

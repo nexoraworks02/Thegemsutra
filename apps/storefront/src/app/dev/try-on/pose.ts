@@ -18,6 +18,9 @@ type Landmarker = { detect(image: HTMLCanvasElement | ImageBitmap): { landmarks:
 
 let instance: Promise<{ landmarker: Landmarker; delegate: "GPU" | "CPU" }> | null = null;
 
+/** Up to this many people are detected, so group photos can be recognised. */
+const MAX_POSES = 3;
+
 export function loadPoseLandmarker() {
   instance ??= (async () => {
     const { FilesetResolver, PoseLandmarker } = await import("@mediapipe/tasks-vision");
@@ -26,24 +29,27 @@ export function loadPoseLandmarker() {
       PoseLandmarker.createFromOptions(fileset, {
         baseOptions: { modelAssetPath: MODEL_URL, delegate },
         runningMode: "IMAGE",
-        numPoses: 1,
+        numPoses: MAX_POSES,
         minPoseDetectionConfidence: 0.5,
         minPosePresenceConfidence: 0.5,
       });
-    // GPU is not guaranteed (older phones, some browsers): fall back to CPU.
+    // Photo mode uses the CPU: one detection per photo, and the first GPU detection
+    // spends 1-10 s compiling shaders (measured), while CPU is ready in ~0.4 s at a
+    // similar per-photo speed. GPU stays as the fallback (and for a future live camera).
     try {
-      return { landmarker: (await create("GPU")) as unknown as Landmarker, delegate: "GPU" as const };
-    } catch {
       return { landmarker: (await create("CPU")) as unknown as Landmarker, delegate: "CPU" as const };
+    } catch {
+      return { landmarker: (await create("GPU")) as unknown as Landmarker, delegate: "GPU" as const };
     }
   })();
   instance.catch(() => (instance = null));
   return instance;
 }
 
-export async function detectPose(image: HTMLCanvasElement): Promise<{ landmarks: PoseLandmark[] | null; delegate: string; ms: number }> {
+/** Detect every person in the photo (up to MAX_POSES); the caller decides who to use. */
+export async function detectPoses(image: HTMLCanvasElement): Promise<{ poses: PoseLandmark[][]; delegate: string; ms: number }> {
   const { landmarker, delegate } = await loadPoseLandmarker();
   const t0 = performance.now();
   const result = landmarker.detect(image);
-  return { landmarks: result.landmarks[0] ?? null, delegate, ms: Math.round(performance.now() - t0) };
+  return { poses: result.landmarks, delegate, ms: Math.round(performance.now() - t0) };
 }
