@@ -4,6 +4,9 @@ import type { DesignConfig, ProductDef } from "./types";
 /**
  * Short URL keys (like Jewlr) so a design is shareable and cacheable:
  *   m=14KR  sc=7  s1=EMER  e1=Ali  ef=script  sz=7  pk=PRM
+ * plus one key per option group the product defines, e.g. cl=18 (chain length).
+ * A repeated key uses its FIRST value (URLSearchParams.get); keys the product
+ * doesn't define are ignored.
  */
 type QueryInput = URLSearchParams | Record<string, string | string[] | undefined>;
 
@@ -29,6 +32,11 @@ export function configFromQuery(product: ProductDef, query: QueryInput): DesignC
   }
   const sc = get("sc");
   const sz = get("sz");
+  const options: Record<string, string> = {};
+  for (const group of product.options ?? []) {
+    const v = get(group.key);
+    if (v != null) options[group.key] = v;
+  }
   return normalizeConfig(product, {
     metal: get("m"),
     stoneCount: sc ? Number(sc) : undefined,
@@ -37,6 +45,7 @@ export function configFromQuery(product: ProductDef, query: QueryInput): DesignC
     font: get("ef"),
     size: sz ? Number(sz) : undefined,
     packaging: get("pk"),
+    options,
   });
 }
 
@@ -71,6 +80,12 @@ export function configToQuery(
   if (!visualOnly) {
     if (config.size != null) put("sz", String(config.size));
     put("pk", config.packaging, def.packaging);
+  }
+  // Option groups come last, in the product's order, so URLs of products without
+  // options are unchanged. Image URLs only include groups that change the image.
+  for (const group of product.options ?? []) {
+    if (visualOnly && !group.visual) continue;
+    put(group.key, config.options?.[group.key], def.options?.[group.key]);
   }
   return q;
 }

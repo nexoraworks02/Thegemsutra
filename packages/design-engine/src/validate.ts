@@ -4,6 +4,21 @@ import type { ProductDef, StoneSlotDef, ValidationIssue } from "./types";
 const SHAPES = ["heart", "round", "oval", "princess", "pear", "marquise"];
 const TYPES = ["ring", "necklace", "bracelet", "earring"];
 
+const OPTION_KEY = /^[a-z][a-z0-9]{1,7}$/;
+const CHOICE_CODE = /^[A-Za-z0-9-]{1,16}$/;
+const MAX_OPTION_GROUPS = 10;
+const MAX_OPTION_CHOICES = 30;
+
+/**
+ * URL keys already used by products, the image service and the storefront.
+ * Option groups may not use them (or the s1..s20 / e0..e9 patterns).
+ */
+export const RESERVED_OPTION_KEYS = ["m", "sc", "ef", "sz", "pk", "w", "v", "dr", "line"] as const;
+
+export function isReservedOptionKey(key: string): boolean {
+  return (RESERVED_OPTION_KEYS as readonly string[]).includes(key) || /^s\d+$/.test(key) || /^e\d+$/.test(key);
+}
+
 /**
  * Checks a design definition before it is saved from the admin.
  * Returns plain-language problems; an empty list means the design is valid.
@@ -81,6 +96,49 @@ export function validateProductDef(def: ProductDef): ValidationIssue[] {
     if (!def.fonts?.length) add("fonts", "Choose at least one engraving font.");
     for (const f of def.fonts ?? []) if (!FONT_BY_CODE[f]) add("fonts", `Unknown font "${f}".`);
     if (!def.fonts?.includes(def.defaultFont)) add("defaultFont", "The default font must be one of the chosen fonts.");
+  }
+
+  for (const e of def.engravings ?? []) {
+    if (e.required != null && typeof e.required !== "boolean") add("engravings", `${e.label?.trim() || "Engraving"}: "required" must be true or false.`);
+  }
+
+  // Option groups (chain length, chain type, ...)
+  if (def.options != null) {
+    if (!Array.isArray(def.options)) add("options", "Options must be a list.");
+    else if (def.options.length > MAX_OPTION_GROUPS) add("options", `At most ${MAX_OPTION_GROUPS} option groups.`);
+    const gKeys = new Set<string>();
+    for (const [i, g] of (Array.isArray(def.options) ? def.options : []).entries()) {
+      const where = g?.label?.trim() || `Option group ${i + 1}`;
+      if (!g || typeof g !== "object") {
+        add("options", `${where}: invalid option group.`);
+        continue;
+      }
+      if (typeof g.key !== "string" || !OPTION_KEY.test(g.key)) add("options", `${where}: key must be 2-8 lowercase letters or digits, starting with a letter (e.g. "cl").`);
+      else if (isReservedOptionKey(g.key)) add("options", `${where}: key "${g.key}" is already used by the product URL.`);
+      if (gKeys.has(g.key)) add("options", `${where}: key ${g.key} is used twice.`);
+      gKeys.add(g.key);
+      if (!g.label?.trim()) add("options", `Option group ${i + 1} needs a label (e.g. "Chain length").`);
+      if (g.visual != null && typeof g.visual !== "boolean") add("options", `${where}: "visual" must be true or false.`);
+      const choices = Array.isArray(g.choices) ? g.choices : [];
+      if (!choices.length) add("options", `${where}: offer at least one choice.`);
+      if (choices.length > MAX_OPTION_CHOICES) add("options", `${where}: at most ${MAX_OPTION_CHOICES} choices.`);
+      const codes = new Set<string>();
+      for (const c of choices) {
+        if (typeof c?.code !== "string" || !CHOICE_CODE.test(c.code)) add("options", `${where}: choice codes may only use letters, digits and "-" (1-16 characters).`);
+        if (codes.has(c?.code)) add("options", `${where}: choice ${c?.code} is listed twice.`);
+        codes.add(c?.code);
+        if (!c?.name?.trim()) add("options", `${where}: every choice needs a name.`);
+        if (!isMoney(c?.price)) add("options", `${where}: ${c?.name || c?.code}: price must be 0 or more.`);
+        if (c?.attributes != null) {
+          const ok =
+            typeof c.attributes === "object" &&
+            !Array.isArray(c.attributes) &&
+            Object.entries(c.attributes).every(([k, v]) => /^[A-Za-z][A-Za-z0-9]{0,31}$/.test(k) && ["string", "number", "boolean"].includes(typeof v));
+          if (!ok) add("options", `${where}: ${c.name || c.code}: attributes must be simple named text, number or true/false values.`);
+        }
+      }
+      if (g.defaultChoice != null && !codes.has(g.defaultChoice)) add("options", `${where}: the default choice must be one of the choices.`);
+    }
   }
 
   // Size

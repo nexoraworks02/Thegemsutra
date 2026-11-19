@@ -1,0 +1,1420 @@
+{
+  "definitions": {
+    "JS0001": {
+      "name": "Twin Hearts Birthstone Ring",
+      "size": {
+        "max": 12,
+        "min": 4,
+        "hint": "Most popular size for women is 7",
+        "step": 0.5,
+        "surcharge": 4900,
+        "surchargeFrom": 11
+      },
+      "slug": "twin-hearts-birthstone-ring",
+      "type": "ring",
+      "fonts": [
+        "classic",
+        "modern",
+        "italic",
+        "script"
+      ],
+      "badges": [
+        "Best Seller"
+      ],
+      "metals": [
+        {
+          "metal": "SS",
+          "price": 12900
+        },
+        {
+          "metal": "GP",
+          "price": 15900
+        },
+        {
+          "metal": "10KW",
+          "price": 89900
+        },
+        {
+          "metal": "10KY",
+          "price": 89900
+        },
+        {
+          "metal": "10KR",
+          "price": 89900
+        },
+        {
+          "metal": "14KW",
+          "price": 129900
+        },
+        {
+          "metal": "14KY",
+          "price": 129900
+        },
+        {
+          "metal": "14KR",
+          "price": 129900
+        }
+      ],
+      "packaging": [
+        {
+          "code": "STD",
+          "name": "Signature Box",
+          "price": 0,
+          "description": "Arrives in our signature ivory box."
+        },
+        {
+          "code": "PRM",
+          "name": "Velvet Keepsake Box",
+          "price": 2500,
+          "description": "A soft velvet box to keep forever."
+        }
+      ],
+      "styleCode": "JS0001",
+      "engravings": [
+        {
+          "key": "e1",
+          "label": "Left Name",
+          "price": 0,
+          "maxChars": 10
+        },
+        {
+          "key": "e2",
+          "label": "Right Name",
+          "price": 0,
+          "maxChars": 10
+        }
+      ],
+      "stoneSlots": [
+        {
+          "key": "s1",
+          "label": "Left Heart",
+          "shape": "heart",
+          "prices": {
+            "CZ": 0,
+            "AMET": 2900,
+            "AQUA": 4900,
+            "BTOP": 2900,
+            "CITR": 2900,
+            "EMER": 9900,
+            "GARN": 2900,
+            "LDIA": 39900,
+            "PERI": 2900,
+            "PERL": 3900,
+            "PTOU": 4900,
+            "RUBY": 9900,
+            "SAPH": 9900,
+            "WTOP": 2900,
+            "S-ALEX": 0,
+            "S-AMET": 0,
+            "S-AQUA": 0,
+            "S-BTOP": 0,
+            "S-CITR": 0,
+            "S-EMER": 0,
+            "S-GARN": 0,
+            "S-PERI": 0,
+            "S-PTOU": 0,
+            "S-RUBY": 0,
+            "S-SAPH": 0
+          },
+          "sizeMm": "4x4",
+          "defaultStone": "S-EMER"
+        },
+        {
+          "key": "s2",
+          "label": "Right Heart",
+          "shape": "heart",
+          "prices": {
+            "CZ": 0,
+            "AMET": 2900,
+            "AQUA": 4900,
+            "BTOP": 2900,
+            "CITR": 2900,
+            "EMER": 9900,
+            "GARN": 2900,
+            "LDIA": 39900,
+            "PERI": 2900,
+            "PERL": 3900,
+            "PTOU": 4900,
+            "RUBY": 9900,
+            "SAPH": 9900,
+            "WTOP": 2900,
+            "S-ALEX": 0,
+            "S-AMET": 0,
+            "S-AQUA": 0,
+            "S-BTOP": 0,
+            "S-CITR": 0,
+            "S-EMER": 0,
+            "S-GARN": 0,
+            "S-PERI": 0,
+            "S-PTOU": 0,
+            "S-RUBY": 0,
+            "S-SAPH": 0
+          },
+          "sizeMm": "4x4",
+          "defaultStone": "S-BTOP"
+        }
+      ],
+      "defaultFont": "classic",
+      "description": "Two heart-cut stones sit side by side on a gently curved band - one for each of you. Engrave both names along the band to make it yours.",
+      "salePercent": 25,
+      "defaultMetal": "GP"
+    },
+    "JS0002": {
+      "name": "Family Birthstone Band",
+      "size": {
+        "max": 12,
+        "min": 4,
+        "step": 0.5,
+        "surcharge": 4900,
+        "surchargeFrom": 11
+      },
+      "slug": "family-birthstone-band",
+      "type": "ring",
+      "fonts": [
+        "classic",
+        "script"
+      ],
+      "badges": [
+        "New"
+      ],
+      "metals": [
+        {
+          "metal": "SS",
+          "price": 14900
+        },
+        {
+          "metal": "GP",
+          "price": 17900
+        },
+        {
+          "metal": "10KY",
+          "price": 94900
+        },
+        {
+          "metal": "10KR",
+          "price": 94900
+        },
+        {
+          "metal": "14KY",
+          "price": 139900
+        },
+        {
+          "metal": "14KW",
+          "price": 139900
+        }
+      ],
+      "packaging": [
+        {
+          "code": "STD",
+          "name": "Signature Box",
+          "price": 0,
+          "description": "Arrives in our signature ivory box."
+        },
+        {
+          "code": "PRM",
+          "name": "Velvet Keepsake Box",
+          "price": 2500,
+          "description": "A soft velvet box to keep forever."
+        }
+      ],
+      "styleCode": "JS0002",
+      "engravings": [
+        {
+          "key": "e1",
+          "label": "Inside Engraving",
+          "price": 1500,
+          "maxChars": 16
+        }
+      ],
+      "stoneCount": {
+        "max": 9,
+        "min": 3,
+        "slot": {
+          "shape": "round",
+          "prices": {
+            "CZ": 0,
+            "AMET": 1900,
+            "AQUA": 3900,
+            "BTOP": 1900,
+            "CITR": 1900,
+            "EMER": 5900,
+            "GARN": 1900,
+            "LDIA": 22900,
+            "PERI": 1900,
+            "PERL": 2900,
+            "PTOU": 3900,
+            "RUBY": 5900,
+            "SAPH": 5900,
+            "WTOP": 1900,
+            "S-ALEX": 0,
+            "S-AMET": 0,
+            "S-AQUA": 0,
+            "S-BTOP": 0,
+            "S-CITR": 0,
+            "S-EMER": 0,
+            "S-GARN": 0,
+            "S-PERI": 0,
+            "S-PTOU": 0,
+            "S-RUBY": 0,
+            "S-SAPH": 0
+          },
+          "sizeMm": "3",
+          "defaultStone": "CZ"
+        },
+        "included": 5,
+        "defaultCount": 5,
+        "pricePerExtra": 1500
+      },
+      "stoneSlots": [],
+      "defaultFont": "classic",
+      "description": "A band of round birthstones - one for every member of your family. Choose from 3 to 9 stones and add a hidden engraving inside.",
+      "salePercent": 20,
+      "defaultMetal": "SS"
+    },
+    "JS0003": {
+      "name": "Infinity Love Ring",
+      "size": {
+        "max": 12,
+        "min": 4,
+        "hint": "Most popular size for women is 7",
+        "step": 0.5,
+        "surcharge": 4900,
+        "surchargeFrom": 11
+      },
+      "slug": "infinity-love-ring",
+      "type": "ring",
+      "fonts": [
+        "classic",
+        "modern",
+        "italic",
+        "script"
+      ],
+      "badges": [
+        "New"
+      ],
+      "metals": [
+        {
+          "metal": "SS",
+          "price": 10900
+        },
+        {
+          "metal": "GP",
+          "price": 13900
+        },
+        {
+          "metal": "14KR",
+          "price": 109900
+        }
+      ],
+      "packaging": [
+        {
+          "code": "STD",
+          "name": "Signature Box",
+          "price": 0,
+          "description": "Arrives in our signature ivory box."
+        },
+        {
+          "code": "PRM",
+          "name": "Velvet Keepsake Box",
+          "price": 2500,
+          "description": "A soft velvet box to keep forever."
+        }
+      ],
+      "styleCode": "JS0003",
+      "engravings": [
+        {
+          "key": "e1",
+          "label": "Left Name",
+          "price": 0,
+          "maxChars": 10
+        },
+        {
+          "key": "e2",
+          "label": "Right Name",
+          "price": 0,
+          "maxChars": 10
+        }
+      ],
+      "stoneSlots": [
+        {
+          "key": "s1",
+          "label": "Left Heart",
+          "shape": "heart",
+          "prices": {
+            "CZ": 0,
+            "AMET": 2900,
+            "AQUA": 4900,
+            "BTOP": 2900,
+            "CITR": 2900,
+            "EMER": 9900,
+            "GARN": 2900,
+            "LDIA": 39900,
+            "PERI": 2900,
+            "PERL": 3900,
+            "PTOU": 4900,
+            "RUBY": 9900,
+            "SAPH": 9900,
+            "WTOP": 2900,
+            "S-ALEX": 0,
+            "S-AMET": 0,
+            "S-AQUA": 0,
+            "S-BTOP": 0,
+            "S-CITR": 0,
+            "S-EMER": 0,
+            "S-GARN": 0,
+            "S-PERI": 0,
+            "S-PTOU": 0,
+            "S-RUBY": 0,
+            "S-SAPH": 0
+          },
+          "sizeMm": "4x4",
+          "defaultStone": "S-EMER"
+        },
+        {
+          "key": "s2",
+          "label": "Right Heart",
+          "shape": "heart",
+          "prices": {
+            "CZ": 0,
+            "AMET": 2900,
+            "AQUA": 4900,
+            "BTOP": 2900,
+            "CITR": 2900,
+            "EMER": 9900,
+            "GARN": 2900,
+            "LDIA": 39900,
+            "PERI": 2900,
+            "PERL": 3900,
+            "PTOU": 4900,
+            "RUBY": 9900,
+            "SAPH": 9900,
+            "WTOP": 2900,
+            "S-ALEX": 0,
+            "S-AMET": 0,
+            "S-AQUA": 0,
+            "S-BTOP": 0,
+            "S-CITR": 0,
+            "S-EMER": 0,
+            "S-GARN": 0,
+            "S-PERI": 0,
+            "S-PTOU": 0,
+            "S-RUBY": 0,
+            "S-SAPH": 0
+          },
+          "sizeMm": "4x4",
+          "defaultStone": "S-BTOP"
+        }
+      ],
+      "defaultFont": "classic",
+      "description": "Two stones joined by an endless curve - a promise ring for the two of you.",
+      "salePercent": 15,
+      "defaultMetal": "GP",
+      "renderTemplate": "JS0001"
+    }
+  },
+  "cases": [
+    {
+      "style": "JS0001",
+      "query": "",
+      "config": {
+        "metal": "GP",
+        "stones": {
+          "s1": "S-EMER",
+          "s2": "S-BTOP"
+        },
+        "engravings": {
+          "e1": "",
+          "e2": ""
+        },
+        "font": "classic",
+        "packaging": "STD"
+      },
+      "price": {
+        "lines": [
+          {
+            "label": "Design & metal",
+            "detail": "18K Gold Plated Silver",
+            "amount": 15900
+          }
+        ],
+        "total": 15900,
+        "compareAt": 21200
+      },
+      "urlShort": "",
+      "urlVisual": "m=GP&s1=S-EMER&s2=S-BTOP",
+      "urlAll": "m=GP&s1=S-EMER&s2=S-BTOP&ef=classic&pk=STD",
+      "summary": [
+        [
+          "Style",
+          "JS0001"
+        ],
+        [
+          "Metal",
+          "18K Gold Plated Silver"
+        ],
+        [
+          "Left Heart",
+          "Emerald (Simulated) (4x4mm heart)"
+        ],
+        [
+          "Right Heart",
+          "Blue Topaz (Simulated) (4x4mm heart)"
+        ],
+        [
+          "Packaging",
+          "Signature Box"
+        ]
+      ],
+      "cartIssues": [
+        {
+          "field": "size",
+          "message": "Please select your ring size."
+        }
+      ]
+    },
+    {
+      "style": "JS0001",
+      "query": "m=14KR&s1=RUBY&s2=S-AQUA&e1=Ayesha&e2=Hamza&ef=script&sz=7&pk=PRM",
+      "config": {
+        "metal": "14KR",
+        "stones": {
+          "s1": "RUBY",
+          "s2": "S-AQUA"
+        },
+        "engravings": {
+          "e1": "Ayesha",
+          "e2": "Hamza"
+        },
+        "font": "script",
+        "size": 7,
+        "packaging": "PRM"
+      },
+      "price": {
+        "lines": [
+          {
+            "label": "Design & metal",
+            "detail": "14K Rose Gold",
+            "amount": 129900
+          },
+          {
+            "label": "Left Heart",
+            "detail": "Ruby",
+            "amount": 9900
+          },
+          {
+            "label": "Packaging",
+            "detail": "Velvet Keepsake Box",
+            "amount": 2500
+          }
+        ],
+        "total": 142300,
+        "compareAt": 189800
+      },
+      "urlShort": "m=14KR&s1=RUBY&s2=S-AQUA&e1=Ayesha&e2=Hamza&ef=script&sz=7&pk=PRM",
+      "urlVisual": "m=14KR&s1=RUBY&s2=S-AQUA&e1=Ayesha&e2=Hamza&ef=script",
+      "urlAll": "m=14KR&s1=RUBY&s2=S-AQUA&e1=Ayesha&e2=Hamza&ef=script&sz=7&pk=PRM",
+      "summary": [
+        [
+          "Style",
+          "JS0001"
+        ],
+        [
+          "Metal",
+          "14K Rose Gold"
+        ],
+        [
+          "Left Heart",
+          "Ruby (4x4mm heart)"
+        ],
+        [
+          "Right Heart",
+          "Aquamarine (Simulated) (4x4mm heart)"
+        ],
+        [
+          "Left Name",
+          "\"Ayesha\""
+        ],
+        [
+          "Right Name",
+          "\"Hamza\""
+        ],
+        [
+          "Font",
+          "Script"
+        ],
+        [
+          "Size",
+          "7.0"
+        ],
+        [
+          "Packaging",
+          "Velvet Keepsake Box"
+        ]
+      ],
+      "cartIssues": []
+    },
+    {
+      "style": "JS0001",
+      "query": "m=SS&e1=Hamza&ef=modern&sz=11.5",
+      "config": {
+        "metal": "SS",
+        "stones": {
+          "s1": "S-EMER",
+          "s2": "S-BTOP"
+        },
+        "engravings": {
+          "e1": "Hamza",
+          "e2": ""
+        },
+        "font": "modern",
+        "size": 11.5,
+        "packaging": "STD"
+      },
+      "price": {
+        "lines": [
+          {
+            "label": "Design & metal",
+            "detail": "925 Sterling Silver",
+            "amount": 12900
+          },
+          {
+            "label": "Ring size",
+            "detail": "Size 11.5",
+            "amount": 4900
+          }
+        ],
+        "total": 17800,
+        "compareAt": 23800
+      },
+      "urlShort": "m=SS&e1=Hamza&ef=modern&sz=11.5",
+      "urlVisual": "m=SS&s1=S-EMER&s2=S-BTOP&e1=Hamza&ef=modern",
+      "urlAll": "m=SS&s1=S-EMER&s2=S-BTOP&e1=Hamza&ef=modern&sz=11.5&pk=STD",
+      "summary": [
+        [
+          "Style",
+          "JS0001"
+        ],
+        [
+          "Metal",
+          "925 Sterling Silver"
+        ],
+        [
+          "Left Heart",
+          "Emerald (Simulated) (4x4mm heart)"
+        ],
+        [
+          "Right Heart",
+          "Blue Topaz (Simulated) (4x4mm heart)"
+        ],
+        [
+          "Left Name",
+          "\"Hamza\""
+        ],
+        [
+          "Font",
+          "Modern"
+        ],
+        [
+          "Size",
+          "11.5"
+        ],
+        [
+          "Packaging",
+          "Signature Box"
+        ]
+      ],
+      "cartIssues": []
+    },
+    {
+      "style": "JS0001",
+      "query": "m=10KY&s1=LDIA&s2=SAPH&sz=12",
+      "config": {
+        "metal": "10KY",
+        "stones": {
+          "s1": "LDIA",
+          "s2": "SAPH"
+        },
+        "engravings": {
+          "e1": "",
+          "e2": ""
+        },
+        "font": "classic",
+        "size": 12,
+        "packaging": "STD"
+      },
+      "price": {
+        "lines": [
+          {
+            "label": "Design & metal",
+            "detail": "10K Yellow Gold",
+            "amount": 89900
+          },
+          {
+            "label": "Left Heart",
+            "detail": "Lab Diamond",
+            "amount": 39900
+          },
+          {
+            "label": "Right Heart",
+            "detail": "Blue Sapphire",
+            "amount": 9900
+          },
+          {
+            "label": "Ring size",
+            "detail": "Size 12",
+            "amount": 4900
+          }
+        ],
+        "total": 144600,
+        "compareAt": 192800
+      },
+      "urlShort": "m=10KY&s1=LDIA&s2=SAPH&sz=12",
+      "urlVisual": "m=10KY&s1=LDIA&s2=SAPH",
+      "urlAll": "m=10KY&s1=LDIA&s2=SAPH&ef=classic&sz=12&pk=STD",
+      "summary": [
+        [
+          "Style",
+          "JS0001"
+        ],
+        [
+          "Metal",
+          "10K Yellow Gold"
+        ],
+        [
+          "Left Heart",
+          "Lab Diamond (4x4mm heart)"
+        ],
+        [
+          "Right Heart",
+          "Blue Sapphire (4x4mm heart)"
+        ],
+        [
+          "Size",
+          "12.0"
+        ],
+        [
+          "Packaging",
+          "Signature Box"
+        ]
+      ],
+      "cartIssues": []
+    },
+    {
+      "style": "JS0001",
+      "query": "m=XX&s1=NOPE&e1=<script>alert(1)</script>&ef=comic&sz=99&pk=GOLD&unit_price=1",
+      "config": {
+        "metal": "GP",
+        "stones": {
+          "s1": "S-EMER",
+          "s2": "S-BTOP"
+        },
+        "engravings": {
+          "e1": "scriptaler",
+          "e2": ""
+        },
+        "font": "classic",
+        "packaging": "STD"
+      },
+      "price": {
+        "lines": [
+          {
+            "label": "Design & metal",
+            "detail": "18K Gold Plated Silver",
+            "amount": 15900
+          }
+        ],
+        "total": 15900,
+        "compareAt": 21200
+      },
+      "urlShort": "e1=scriptaler",
+      "urlVisual": "m=GP&s1=S-EMER&s2=S-BTOP&e1=scriptaler&ef=classic",
+      "urlAll": "m=GP&s1=S-EMER&s2=S-BTOP&e1=scriptaler&ef=classic&pk=STD",
+      "summary": [
+        [
+          "Style",
+          "JS0001"
+        ],
+        [
+          "Metal",
+          "18K Gold Plated Silver"
+        ],
+        [
+          "Left Heart",
+          "Emerald (Simulated) (4x4mm heart)"
+        ],
+        [
+          "Right Heart",
+          "Blue Topaz (Simulated) (4x4mm heart)"
+        ],
+        [
+          "Left Name",
+          "\"scriptaler\""
+        ],
+        [
+          "Font",
+          "Classic"
+        ],
+        [
+          "Packaging",
+          "Signature Box"
+        ]
+      ],
+      "cartIssues": [
+        {
+          "field": "size",
+          "message": "Please select your ring size."
+        }
+      ]
+    },
+    {
+      "style": "JS0001",
+      "query": "m=14KR&m=SS&s1=RUBY&s1=EMER&sz=6.3",
+      "config": {
+        "metal": "14KR",
+        "stones": {
+          "s1": "RUBY",
+          "s2": "S-BTOP"
+        },
+        "engravings": {
+          "e1": "",
+          "e2": ""
+        },
+        "font": "classic",
+        "size": 6.5,
+        "packaging": "STD"
+      },
+      "price": {
+        "lines": [
+          {
+            "label": "Design & metal",
+            "detail": "14K Rose Gold",
+            "amount": 129900
+          },
+          {
+            "label": "Left Heart",
+            "detail": "Ruby",
+            "amount": 9900
+          }
+        ],
+        "total": 139800,
+        "compareAt": 186400
+      },
+      "urlShort": "m=14KR&s1=RUBY&sz=6.5",
+      "urlVisual": "m=14KR&s1=RUBY&s2=S-BTOP",
+      "urlAll": "m=14KR&s1=RUBY&s2=S-BTOP&ef=classic&sz=6.5&pk=STD",
+      "summary": [
+        [
+          "Style",
+          "JS0001"
+        ],
+        [
+          "Metal",
+          "14K Rose Gold"
+        ],
+        [
+          "Left Heart",
+          "Ruby (4x4mm heart)"
+        ],
+        [
+          "Right Heart",
+          "Blue Topaz (Simulated) (4x4mm heart)"
+        ],
+        [
+          "Size",
+          "6.5"
+        ],
+        [
+          "Packaging",
+          "Signature Box"
+        ]
+      ],
+      "cartIssues": []
+    },
+    {
+      "style": "JS0002",
+      "query": "",
+      "config": {
+        "metal": "SS",
+        "stoneCount": 5,
+        "stones": {
+          "s1": "S-RUBY",
+          "s2": "S-AQUA",
+          "s3": "CZ",
+          "s4": "S-EMER",
+          "s5": "S-SAPH"
+        },
+        "engravings": {
+          "e1": ""
+        },
+        "font": "classic",
+        "packaging": "STD"
+      },
+      "price": {
+        "lines": [
+          {
+            "label": "Design & metal",
+            "detail": "925 Sterling Silver",
+            "amount": 14900
+          }
+        ],
+        "total": 14900,
+        "compareAt": 18700
+      },
+      "urlShort": "",
+      "urlVisual": "m=SS&sc=5&s1=S-RUBY&s2=S-AQUA&s3=CZ&s4=S-EMER&s5=S-SAPH",
+      "urlAll": "m=SS&sc=5&s1=S-RUBY&s2=S-AQUA&s3=CZ&s4=S-EMER&s5=S-SAPH&ef=classic&pk=STD",
+      "summary": [
+        [
+          "Style",
+          "JS0002"
+        ],
+        [
+          "Metal",
+          "925 Sterling Silver"
+        ],
+        [
+          "Stones",
+          "5"
+        ],
+        [
+          "Stone 1",
+          "Ruby (Simulated) (3mm round)"
+        ],
+        [
+          "Stone 2",
+          "Aquamarine (Simulated) (3mm round)"
+        ],
+        [
+          "Stone 3",
+          "Cubic Zirconia (3mm round)"
+        ],
+        [
+          "Stone 4",
+          "Emerald (Simulated) (3mm round)"
+        ],
+        [
+          "Stone 5",
+          "Sapphire (Simulated) (3mm round)"
+        ],
+        [
+          "Packaging",
+          "Signature Box"
+        ]
+      ],
+      "cartIssues": [
+        {
+          "field": "size",
+          "message": "Please select your ring size."
+        }
+      ]
+    },
+    {
+      "style": "JS0002",
+      "query": "m=14KY&sc=7&e1=Family&s3=AMET&s7=PERI&sz=8",
+      "config": {
+        "metal": "14KY",
+        "stoneCount": 7,
+        "stones": {
+          "s1": "S-RUBY",
+          "s2": "S-AQUA",
+          "s3": "AMET",
+          "s4": "S-EMER",
+          "s5": "S-SAPH",
+          "s6": "S-PERI",
+          "s7": "PERI"
+        },
+        "engravings": {
+          "e1": "Family"
+        },
+        "font": "classic",
+        "size": 8,
+        "packaging": "STD"
+      },
+      "price": {
+        "lines": [
+          {
+            "label": "Design & metal",
+            "detail": "14K Yellow Gold",
+            "amount": 139900
+          },
+          {
+            "label": "Stone 3",
+            "detail": "Amethyst",
+            "amount": 1900
+          },
+          {
+            "label": "Stone 7",
+            "detail": "Peridot",
+            "amount": 1900
+          },
+          {
+            "label": "Extra stones",
+            "detail": "2 x 1500",
+            "amount": 3000
+          },
+          {
+            "label": "Inside Engraving",
+            "detail": "\"Family\"",
+            "amount": 1500
+          }
+        ],
+        "total": 148200,
+        "compareAt": 185300
+      },
+      "urlShort": "m=14KY&sc=7&s3=AMET&s7=PERI&e1=Family&sz=8",
+      "urlVisual": "m=14KY&sc=7&s1=S-RUBY&s2=S-AQUA&s3=AMET&s4=S-EMER&s5=S-SAPH&s6=S-PERI&s7=PERI&e1=Family&ef=classic",
+      "urlAll": "m=14KY&sc=7&s1=S-RUBY&s2=S-AQUA&s3=AMET&s4=S-EMER&s5=S-SAPH&s6=S-PERI&s7=PERI&e1=Family&ef=classic&sz=8&pk=STD",
+      "summary": [
+        [
+          "Style",
+          "JS0002"
+        ],
+        [
+          "Metal",
+          "14K Yellow Gold"
+        ],
+        [
+          "Stones",
+          "7"
+        ],
+        [
+          "Stone 1",
+          "Ruby (Simulated) (3mm round)"
+        ],
+        [
+          "Stone 2",
+          "Aquamarine (Simulated) (3mm round)"
+        ],
+        [
+          "Stone 3",
+          "Amethyst (3mm round)"
+        ],
+        [
+          "Stone 4",
+          "Emerald (Simulated) (3mm round)"
+        ],
+        [
+          "Stone 5",
+          "Sapphire (Simulated) (3mm round)"
+        ],
+        [
+          "Stone 6",
+          "Peridot (Simulated) (3mm round)"
+        ],
+        [
+          "Stone 7",
+          "Peridot (3mm round)"
+        ],
+        [
+          "Inside Engraving",
+          "\"Family\""
+        ],
+        [
+          "Font",
+          "Classic"
+        ],
+        [
+          "Size",
+          "8.0"
+        ],
+        [
+          "Packaging",
+          "Signature Box"
+        ]
+      ],
+      "cartIssues": []
+    },
+    {
+      "style": "JS0002",
+      "query": "sc=3&s5=RUBY&e1=Ali   &ef=italic",
+      "config": {
+        "metal": "SS",
+        "stoneCount": 3,
+        "stones": {
+          "s1": "S-RUBY",
+          "s2": "S-AQUA",
+          "s3": "CZ"
+        },
+        "engravings": {
+          "e1": "Ali "
+        },
+        "font": "classic",
+        "packaging": "STD"
+      },
+      "price": {
+        "lines": [
+          {
+            "label": "Design & metal",
+            "detail": "925 Sterling Silver",
+            "amount": 14900
+          },
+          {
+            "label": "Inside Engraving",
+            "detail": "\"Ali\"",
+            "amount": 1500
+          }
+        ],
+        "total": 16400,
+        "compareAt": 20500
+      },
+      "urlShort": "sc=3&e1=Ali+",
+      "urlVisual": "m=SS&sc=3&s1=S-RUBY&s2=S-AQUA&s3=CZ&e1=Ali+&ef=classic",
+      "urlAll": "m=SS&sc=3&s1=S-RUBY&s2=S-AQUA&s3=CZ&e1=Ali+&ef=classic&pk=STD",
+      "summary": [
+        [
+          "Style",
+          "JS0002"
+        ],
+        [
+          "Metal",
+          "925 Sterling Silver"
+        ],
+        [
+          "Stones",
+          "3"
+        ],
+        [
+          "Stone 1",
+          "Ruby (Simulated) (3mm round)"
+        ],
+        [
+          "Stone 2",
+          "Aquamarine (Simulated) (3mm round)"
+        ],
+        [
+          "Stone 3",
+          "Cubic Zirconia (3mm round)"
+        ],
+        [
+          "Inside Engraving",
+          "\"Ali \""
+        ],
+        [
+          "Font",
+          "Classic"
+        ],
+        [
+          "Packaging",
+          "Signature Box"
+        ]
+      ],
+      "cartIssues": [
+        {
+          "field": "size",
+          "message": "Please select your ring size."
+        }
+      ]
+    },
+    {
+      "style": "JS0002",
+      "query": "sc=99&sz=-1",
+      "config": {
+        "metal": "SS",
+        "stoneCount": 9,
+        "stones": {
+          "s1": "S-RUBY",
+          "s2": "S-AQUA",
+          "s3": "CZ",
+          "s4": "S-EMER",
+          "s5": "S-SAPH",
+          "s6": "S-PERI",
+          "s7": "S-AMET",
+          "s8": "S-CITR",
+          "s9": "S-PTOU"
+        },
+        "engravings": {
+          "e1": ""
+        },
+        "font": "classic",
+        "packaging": "STD"
+      },
+      "price": {
+        "lines": [
+          {
+            "label": "Design & metal",
+            "detail": "925 Sterling Silver",
+            "amount": 14900
+          },
+          {
+            "label": "Extra stones",
+            "detail": "4 x 1500",
+            "amount": 6000
+          }
+        ],
+        "total": 20900,
+        "compareAt": 26200
+      },
+      "urlShort": "sc=9",
+      "urlVisual": "m=SS&sc=9&s1=S-RUBY&s2=S-AQUA&s3=CZ&s4=S-EMER&s5=S-SAPH&s6=S-PERI&s7=S-AMET&s8=S-CITR&s9=S-PTOU",
+      "urlAll": "m=SS&sc=9&s1=S-RUBY&s2=S-AQUA&s3=CZ&s4=S-EMER&s5=S-SAPH&s6=S-PERI&s7=S-AMET&s8=S-CITR&s9=S-PTOU&ef=classic&pk=STD",
+      "summary": [
+        [
+          "Style",
+          "JS0002"
+        ],
+        [
+          "Metal",
+          "925 Sterling Silver"
+        ],
+        [
+          "Stones",
+          "9"
+        ],
+        [
+          "Stone 1",
+          "Ruby (Simulated) (3mm round)"
+        ],
+        [
+          "Stone 2",
+          "Aquamarine (Simulated) (3mm round)"
+        ],
+        [
+          "Stone 3",
+          "Cubic Zirconia (3mm round)"
+        ],
+        [
+          "Stone 4",
+          "Emerald (Simulated) (3mm round)"
+        ],
+        [
+          "Stone 5",
+          "Sapphire (Simulated) (3mm round)"
+        ],
+        [
+          "Stone 6",
+          "Peridot (Simulated) (3mm round)"
+        ],
+        [
+          "Stone 7",
+          "Amethyst (Simulated) (3mm round)"
+        ],
+        [
+          "Stone 8",
+          "Citrine (Simulated) (3mm round)"
+        ],
+        [
+          "Stone 9",
+          "Pink Tourmaline (Simulated) (3mm round)"
+        ],
+        [
+          "Packaging",
+          "Signature Box"
+        ]
+      ],
+      "cartIssues": [
+        {
+          "field": "size",
+          "message": "Please select your ring size."
+        }
+      ]
+    },
+    {
+      "style": "JS0003",
+      "query": "",
+      "config": {
+        "metal": "GP",
+        "stones": {
+          "s1": "S-EMER",
+          "s2": "S-BTOP"
+        },
+        "engravings": {
+          "e1": "",
+          "e2": ""
+        },
+        "font": "classic",
+        "packaging": "STD"
+      },
+      "price": {
+        "lines": [
+          {
+            "label": "Design & metal",
+            "detail": "18K Gold Plated Silver",
+            "amount": 13900
+          }
+        ],
+        "total": 13900,
+        "compareAt": 16400
+      },
+      "urlShort": "",
+      "urlVisual": "m=GP&s1=S-EMER&s2=S-BTOP",
+      "urlAll": "m=GP&s1=S-EMER&s2=S-BTOP&ef=classic&pk=STD",
+      "summary": [
+        [
+          "Style",
+          "JS0003"
+        ],
+        [
+          "Metal",
+          "18K Gold Plated Silver"
+        ],
+        [
+          "Left Heart",
+          "Emerald (Simulated) (4x4mm heart)"
+        ],
+        [
+          "Right Heart",
+          "Blue Topaz (Simulated) (4x4mm heart)"
+        ],
+        [
+          "Packaging",
+          "Signature Box"
+        ]
+      ],
+      "cartIssues": [
+        {
+          "field": "size",
+          "message": "Please select your ring size."
+        }
+      ]
+    },
+    {
+      "style": "JS0003",
+      "query": "m=14KR&s1=EMER&s2=RUBY&e1=Forever&ef=classic&sz=5&pk=PRM",
+      "config": {
+        "metal": "14KR",
+        "stones": {
+          "s1": "EMER",
+          "s2": "RUBY"
+        },
+        "engravings": {
+          "e1": "Forever",
+          "e2": ""
+        },
+        "font": "classic",
+        "size": 5,
+        "packaging": "PRM"
+      },
+      "price": {
+        "lines": [
+          {
+            "label": "Design & metal",
+            "detail": "14K Rose Gold",
+            "amount": 109900
+          },
+          {
+            "label": "Left Heart",
+            "detail": "Emerald",
+            "amount": 9900
+          },
+          {
+            "label": "Right Heart",
+            "detail": "Ruby",
+            "amount": 9900
+          },
+          {
+            "label": "Packaging",
+            "detail": "Velvet Keepsake Box",
+            "amount": 2500
+          }
+        ],
+        "total": 132200,
+        "compareAt": 155600
+      },
+      "urlShort": "m=14KR&s1=EMER&s2=RUBY&e1=Forever&sz=5&pk=PRM",
+      "urlVisual": "m=14KR&s1=EMER&s2=RUBY&e1=Forever&ef=classic",
+      "urlAll": "m=14KR&s1=EMER&s2=RUBY&e1=Forever&ef=classic&sz=5&pk=PRM",
+      "summary": [
+        [
+          "Style",
+          "JS0003"
+        ],
+        [
+          "Metal",
+          "14K Rose Gold"
+        ],
+        [
+          "Left Heart",
+          "Emerald (4x4mm heart)"
+        ],
+        [
+          "Right Heart",
+          "Ruby (4x4mm heart)"
+        ],
+        [
+          "Left Name",
+          "\"Forever\""
+        ],
+        [
+          "Font",
+          "Classic"
+        ],
+        [
+          "Size",
+          "5.0"
+        ],
+        [
+          "Packaging",
+          "Velvet Keepsake Box"
+        ]
+      ],
+      "cartIssues": []
+    },
+    {
+      "style": "JS0003",
+      "query": "m=GP&e1=Zainab 1998 ♥&sz=9.5",
+      "config": {
+        "metal": "GP",
+        "stones": {
+          "s1": "S-EMER",
+          "s2": "S-BTOP"
+        },
+        "engravings": {
+          "e1": "Zainab 199",
+          "e2": ""
+        },
+        "font": "classic",
+        "size": 9.5,
+        "packaging": "STD"
+      },
+      "price": {
+        "lines": [
+          {
+            "label": "Design & metal",
+            "detail": "18K Gold Plated Silver",
+            "amount": 13900
+          }
+        ],
+        "total": 13900,
+        "compareAt": 16400
+      },
+      "urlShort": "e1=Zainab+199&sz=9.5",
+      "urlVisual": "m=GP&s1=S-EMER&s2=S-BTOP&e1=Zainab+199&ef=classic",
+      "urlAll": "m=GP&s1=S-EMER&s2=S-BTOP&e1=Zainab+199&ef=classic&sz=9.5&pk=STD",
+      "summary": [
+        [
+          "Style",
+          "JS0003"
+        ],
+        [
+          "Metal",
+          "18K Gold Plated Silver"
+        ],
+        [
+          "Left Heart",
+          "Emerald (Simulated) (4x4mm heart)"
+        ],
+        [
+          "Right Heart",
+          "Blue Topaz (Simulated) (4x4mm heart)"
+        ],
+        [
+          "Left Name",
+          "\"Zainab 199\""
+        ],
+        [
+          "Font",
+          "Classic"
+        ],
+        [
+          "Size",
+          "9.5"
+        ],
+        [
+          "Packaging",
+          "Signature Box"
+        ]
+      ],
+      "cartIssues": []
+    }
+  ]
+}

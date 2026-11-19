@@ -1,5 +1,5 @@
 import { FONT_BY_CODE, METAL_BY_CODE, STONE_BY_CODE } from "./catalog/materials";
-import { resolveSlots } from "./config";
+import { resolveSlots, selectedOptions } from "./config";
 import type { DesignConfig, ProductDef } from "./types";
 
 /**
@@ -19,6 +19,7 @@ export function describeDesign(product: ProductDef, config: DesignConfig): [labe
   const engraved = product.engravings.filter((e) => config.engravings[e.key]);
   for (const e of engraved) rows.push([e.label, `"${config.engravings[e.key]}"`]);
   if (engraved.length) rows.push(["Font", FONT_BY_CODE[config.font]?.name ?? config.font]);
+  for (const { group, choice } of selectedOptions(product, config)) rows.push([group.label, choice.name]);
   if (config.size != null) rows.push(["Size", config.size.toFixed(1)]);
   rows.push(["Packaging", product.packaging.find((p) => p.code === config.packaging)?.name ?? config.packaging]);
   return rows;

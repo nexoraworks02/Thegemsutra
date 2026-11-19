@@ -42,6 +42,8 @@ export function Designer({ product }: { product: ProductDef }) {
   const [config, setConfig] = useState<DesignConfig>(() => configFromQuery(product, params));
   const [open, setOpen] = useState<string>("metal");
   const [sizeError, setSizeError] = useState(false);
+  /** Required personalisation that is missing, per engraving key (same rule as the server). */
+  const [engravingErrors, setEngravingErrors] = useState<Record<string, string>>({});
   const [added, setAdded] = useState(false);
 
   // No design in the URL? Start from what the shopper chose on other products.
@@ -56,6 +58,7 @@ export function Designer({ product }: { product: ProductDef }) {
     (patch: Partial<DesignConfig>) => {
       setConfig((prev) => normalizeConfig(product, { ...prev, ...patch, stones: { ...prev.stones, ...patch.stones }, engravings: { ...prev.engravings, ...patch.engravings } }));
       if (patch.size != null) setSizeError(false);
+      if (patch.engravings) setEngravingErrors({});
       setAdded(false);
     },
     [product],
@@ -80,9 +83,14 @@ export function Designer({ product }: { product: ProductDef }) {
   const addToCart = async () => {
     const issues = validateForCart(product, config);
     if (issues.length) {
-      setSizeError(true);
-      setOpen("size");
-      document.getElementById("step-size")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      const engravingKeys = new Set(product.engravings.map((e) => e.key));
+      const missingText = issues.filter((i) => engravingKeys.has(i.field));
+      setEngravingErrors(Object.fromEntries(missingText.map((i) => [i.field, i.message])));
+      setSizeError(issues.some((i) => i.field === "size"));
+      // Open the first step that needs attention (engraving issues come first).
+      const step = missingText.length ? "engraving" : "size";
+      setOpen(step);
+      document.getElementById(`step-${step}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
     setSaving(true);
@@ -176,9 +184,10 @@ export function Designer({ product }: { product: ProductDef }) {
             <Step
               id="engraving"
               title={`Engraving (${FONT_BY_CODE[config.font]?.name})`}
-              summary={product.engravings.map((e) => config.engravings[e.key]).filter(Boolean).join(" · ") || "Optional"}
+              summary={product.engravings.map((e) => config.engravings[e.key]).filter(Boolean).join(" · ") || (product.engravings.some((e) => e.required) ? "Required" : "Optional")}
               open={open}
               setOpen={setOpen}
+              error={Object.keys(engravingErrors).length > 0}
             >
               <div className="space-y-3">
                 {product.engravings.map((e) => {
@@ -194,9 +203,12 @@ export function Designer({ product }: { product: ProductDef }) {
                         maxLength={e.maxChars}
                         onChange={(ev) => update({ engravings: { [e.key]: ev.target.value } })}
                         placeholder={e.label}
+                        aria-required={e.required || undefined}
+                        aria-invalid={engravingErrors[e.key] ? true : undefined}
                         className="field px-3 py-2.5 text-[15px]"
                         style={{ fontFamily: FONT_FAMILY[config.font], fontStyle: config.font === "italic" ? "italic" : undefined }}
                       />
+                      {engravingErrors[e.key] && <span role="alert" className="mt-1 block text-sm text-sale">{engravingErrors[e.key]}</span>}
                     </label>
                   );
                 })}

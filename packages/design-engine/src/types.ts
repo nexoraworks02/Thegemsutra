@@ -63,6 +63,40 @@ export interface EngravingDef {
   label: string;
   maxChars: number;
   price: Money; // extra charge when filled
+  /**
+   * The piece cannot be made without this text (e.g. a name necklace). Empty or
+   * whitespace-only text is rejected before the cart. Optional when omitted.
+   */
+  required?: boolean;
+}
+
+/** One selectable value of an option group, e.g. "18 inch". */
+export interface OptionChoiceDef {
+  /** Stable value used in URLs and orders, e.g. "18". Letters, digits and "-" only. */
+  code: string;
+  name: string; // shown to shoppers and on the workshop sheet
+  /** Added to the price when chosen (0 = included). Never taken from the client. */
+  price: Money;
+  /**
+   * Optional typed facts for other systems, e.g. { lengthIn: 18 } for try-on or
+   * { mm: 1.2 } for the workshop. Not used for pricing or validation of the order.
+   */
+  attributes?: Record<string, string | number | boolean>;
+}
+
+/**
+ * A generic product option (chain length, chain type, pendant size, ...).
+ * Every group always has exactly one chosen value.
+ */
+export interface OptionGroupDef {
+  /** URL key, e.g. "cl". Lowercase, 2-8 chars, must not clash with built-in keys (see RESERVED_OPTION_KEYS). */
+  key: string;
+  label: string; // "Chain length"
+  choices: OptionChoiceDef[];
+  /** Pre-selected choice; defaults to the first choice. */
+  defaultChoice?: string;
+  /** True when the choice changes the product image (included in image URLs / cache keys). */
+  visual?: boolean;
 }
 
 export interface SizeDef {
@@ -97,6 +131,8 @@ export interface ProductDef {
   fonts: string[]; // Font.code
   defaultFont: string;
   size?: SizeDef;
+  /** Generic options (chain length, chain type, ...). Omitted for products without them. */
+  options?: OptionGroupDef[];
   packaging: PackagingOption[];
   /** Strike-through "compare at" price = price / (1 - salePercent/100) */
   salePercent?: number;
@@ -116,6 +152,8 @@ export interface DesignConfig {
   engravings: Record<string, string>; // engraving key -> text
   font: string;
   size?: number;
+  /** Option group key -> chosen choice code. Present only for products that define option groups. */
+  options?: Record<string, string>;
   packaging: string;
 }
 

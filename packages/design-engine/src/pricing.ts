@@ -1,5 +1,5 @@
 import { METAL_BY_CODE, STONE_BY_CODE } from "./catalog/materials";
-import { resolveSlots } from "./config";
+import { resolveSlots, selectedOptions } from "./config";
 import type { DesignConfig, PriceBreakdown, PriceLine, ProductDef } from "./types";
 
 /**
@@ -8,9 +8,11 @@ import type { DesignConfig, PriceBreakdown, PriceLine, ProductDef } from "./type
  * + each stone's price for its slot size
  * + extra stones beyond the included count
  * + filled engravings that carry a charge
+ * + chosen option-group choices that carry a charge (chain length, ...)
  * + size surcharge
  * + packaging
- * The config must already be normalised (see normalizeConfig).
+ * The config must already be normalised (see normalizeConfig). All amounts come
+ * from the product definition; nothing price-related is read from the config.
  */
 export function priceDesign(product: ProductDef, config: DesignConfig): PriceBreakdown {
   const lines: PriceLine[] = [];
@@ -43,6 +45,10 @@ export function priceDesign(product: ProductDef, config: DesignConfig): PriceBre
     if (text && e.price > 0) {
       lines.push({ label: e.label, detail: `"${text}"`, amount: e.price });
     }
+  }
+
+  for (const { group, choice } of selectedOptions(product, config)) {
+    if (choice.price > 0) lines.push({ label: group.label, detail: choice.name, amount: choice.price });
   }
 
   const s = product.size;
