@@ -34,9 +34,9 @@ export default async function HomePage() {
     <>
       <section className="mx-auto max-w-7xl px-4 sm:px-6 pt-10 pb-16 grid gap-10 lg:grid-cols-2 items-center">
         <div>
-          <p className="eyebrow text-rose-deep">Personalized fine jewelry</p>
+          <p className="eyebrow text-brand">Personalized fine jewelry</p>
           <h1 className="mt-4 text-4xl sm:text-6xl leading-[1.05]">
-            Jewelry that <em className="text-rose">tells your story</em>
+            Jewelry that <em className="text-brand">tells your story</em>
           </h1>
           <p className="mt-6 max-w-md text-muted leading-relaxed">
             Choose the metal, the birthstones and the words. See your design come to life as you create it - then
@@ -68,19 +68,19 @@ export default async function HomePage() {
         <div className="marquee-track flex w-max gap-12 py-3 text-[12px] tracking-[0.18em] uppercase">
           {[...TRUST, ...TRUST].map((t, i) => (
             <span key={i} className="flex items-center gap-12">
-              {t} <span className="text-rose" aria-hidden>◆</span>
+              {t} <span className="text-brand" aria-hidden>◆</span>
             </span>
           ))}
         </div>
       </div>
 
       <section className="mx-auto max-w-7xl px-4 sm:px-6 py-20">
-        <p className="eyebrow text-rose-deep text-center">How it works</p>
+        <p className="eyebrow text-brand text-center">How it works</p>
         <h2 className="mt-3 text-3xl sm:text-4xl text-center">Designed by you, made by hand</h2>
         <div className="mt-12 grid gap-8 sm:grid-cols-3">
           {STEPS.map((s) => (
-            <div key={s.n} className="border-t border-blush pt-6">
-              <p className="font-serif text-rose text-3xl">{s.n}</p>
+            <div key={s.n} className="border-t border-line pt-6">
+              <p className="font-serif text-brand text-3xl">{s.n}</p>
               <h3 className="mt-2 text-xl">{s.title}</h3>
               <p className="mt-2 text-muted text-sm leading-relaxed">{s.text}</p>
             </div>
@@ -91,7 +91,7 @@ export default async function HomePage() {
       <section id="collection" className="mx-auto max-w-7xl px-4 sm:px-6 scroll-mt-28">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <p className="eyebrow text-rose-deep">The collection</p>
+            <p className="eyebrow text-brand">The collection</p>
             <h2 className="mt-3 text-3xl sm:text-4xl">Start with a design you love</h2>
           </div>
           <p className="hidden sm:block text-sm text-muted">{designs.length} designs</p>

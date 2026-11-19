@@ -101,7 +101,7 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
 </style></head><body>
   <div class="toolbar"><button onclick="window.print()">Print / Save as PDF</button></div>
   <header>
-    <div><div class="brand">THEJEMSUTRA</div><div class="title">Workshop sheet</div></div>
+    <div><div class="brand">THEGEMSUTRA</div><div class="title">Workshop sheet</div></div>
     <div class="order">
       <div class="num">#${order.display_id}</div>
       <div><span class="due">Ship by ${esc(prod.due_date ?? "-")}</span>${express ? '<span class="express">EXPRESS</span>' : ""}</div>

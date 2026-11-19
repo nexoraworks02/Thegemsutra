@@ -6,6 +6,7 @@ import { PRODUCTS, defaultConfig, fromPrice } from "@jemsutra/design-engine";
 import { getDesign, getDesigns } from "@/lib/designs";
 import { Designer } from "@/components/designer/Designer";
 import { designImageUrl } from "@/lib/media";
+import { BRAND_NAME, SITE_OPEN_GRAPH } from "@/lib/brand";
 
 export async function generateStaticParams() {
   // Pre-render published designs. Cache Components needs at least one route, so if the
@@ -22,7 +23,7 @@ export async function generateMetadata(props: PageProps<"/products/[style]/[slug
   return {
     title: product.name,
     description: product.description,
-    openGraph: { images: [designImageUrl(product, defaultConfig(product), { width: 1200 })] },
+    openGraph: { ...SITE_OPEN_GRAPH, title: product.name, description: product.description, images: [designImageUrl(product, defaultConfig(product), { width: 1200 })] },
   };
 }
 
@@ -52,7 +53,7 @@ async function ProductContent({ params }: { params: PageProps<"/products/[style]
     sku: product.styleCode,
     description: product.description,
     image: designImageUrl(product, defaultConfig(product), { width: 1200 }),
-    brand: { "@type": "Brand", name: "THEJEMSUTRA" },
+    brand: { "@type": "Brand", name: BRAND_NAME },
     offers: {
       "@type": "AggregateOffer",
       priceCurrency: "PKR",
@@ -65,7 +66,7 @@ async function ProductContent({ params }: { params: PageProps<"/products/[style]
   return (
     <>
       <nav aria-label="Breadcrumb" className="text-xs text-muted mb-6">
-        <Link href="/" className="hover:text-rose-deep">Home</Link> / <Link href="/#collection" className="hover:text-rose-deep">{{ ring: "Rings", necklace: "Necklaces", bracelet: "Bracelets", earring: "Earrings" }[product.type]}</Link> /{" "}
+        <Link href="/" className="hover:text-brand">Home</Link> / <Link href="/#collection" className="hover:text-brand">{{ ring: "Rings", necklace: "Necklaces", bracelet: "Bracelets", earring: "Earrings" }[product.type]}</Link> /{" "}
         <span className="text-ink">{product.name}</span>
       </nav>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />

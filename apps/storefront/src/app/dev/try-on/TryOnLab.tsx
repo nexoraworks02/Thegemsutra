@@ -234,7 +234,7 @@ export function TryOnLab() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `thejemsutra-try-on-${sanitizeEngraving(name, NAME_MAX).replace(/\s+/g, "-") || "necklace"}.png`;
+      a.download = `thegemsutra-try-on-${sanitizeEngraving(name, NAME_MAX).replace(/\s+/g, "-") || "necklace"}.png`;
       a.click();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     }, "image/png");
@@ -269,7 +269,7 @@ export function TryOnLab() {
           </label>
         )}
         {status.kind !== "idle" && (
-          <p role="status" className={`mt-3 text-sm ${status.kind === "error" ? "text-sale" : status.kind === "warn" ? "text-rose-deep" : "text-muted"}`}>
+          <p role="status" className={`mt-3 text-sm ${status.kind === "error" ? "text-sale" : status.kind === "warn" ? "text-brand" : "text-muted"}`}>
             {status.text}
           </p>
         )}
@@ -303,7 +303,7 @@ export function TryOnLab() {
 
         <section className="space-y-3">
           <h2 className="eyebrow">2 · Photo</h2>
-          <label className="inline-block border border-ink px-4 py-2 text-xs tracking-[0.14em] uppercase cursor-pointer hover:bg-ink hover:text-ivory">
+          <label className="inline-block border border-brand text-brand px-4 py-2 text-xs tracking-[0.14em] uppercase cursor-pointer hover:bg-brand hover:text-white">
             {photo ? "Choose another photo" : "Upload or take a selfie"}
             <input type="file" accept="image/*" capture="user" className="sr-only" onChange={(e) => onFile(e.target.files?.[0])} />
           </label>
@@ -338,9 +338,9 @@ export function TryOnLab() {
             <div className="flex flex-wrap gap-2 text-xs">
               {([["↑", 0, -1], ["↓", 0, 1], ["←", -1, 0], ["→", 1, 0]] as const).map(([l, x, y]) => (
                 <button key={l} type="button" aria-label={`Move ${l}`} onClick={() => dispatch({ type: "move", dx: x * (photo.width / 200), dy: y * (photo.width / 200) })}
-                  className="border border-line px-3 py-1 hover:border-ink">{l}</button>
+                  className="border border-line px-3 py-1 hover:border-brand">{l}</button>
               ))}
-              <button type="button" onClick={() => dispatch({ type: "reset" })} className="border border-line px-3 py-1 hover:border-ink">Reset</button>
+              <button type="button" onClick={() => dispatch({ type: "reset" })} className="border border-line px-3 py-1 hover:border-brand">Reset</button>
             </div>
             <label className="flex items-center gap-2 text-xs text-muted">
               <input type="checkbox" checked={showGuides} onChange={(e) => setShowGuides(e.target.checked)} /> Show detection guides

@@ -134,7 +134,7 @@ export function CheckoutForm() {
     <form onSubmit={placeOrder} noValidate className="mt-8 grid gap-10 lg:grid-cols-[1fr_360px]">
       <div className="space-y-10">
         <fieldset>
-          <legend className="eyebrow text-rose-deep mb-4">1 · Contact</legend>
+          <legend className="eyebrow text-brand mb-4">1 · Contact</legend>
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Email" error={errors.email} className="sm:col-span-2">
               <input type="email" autoComplete="email" value={form.email} onChange={set("email")} className={input(errors.email)} />
@@ -146,7 +146,7 @@ export function CheckoutForm() {
         </fieldset>
 
         <fieldset>
-          <legend className="eyebrow text-rose-deep mb-4">2 · Delivery address</legend>
+          <legend className="eyebrow text-brand mb-4">2 · Delivery address</legend>
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="First name" error={errors.first_name}>
               <input autoComplete="given-name" value={form.first_name} onChange={set("first_name")} className={input(errors.first_name)} />
@@ -178,12 +178,12 @@ export function CheckoutForm() {
         </fieldset>
 
         <fieldset>
-          <legend className="eyebrow text-rose-deep mb-4">3 · Delivery</legend>
+          <legend className="eyebrow text-brand mb-4">3 · Delivery</legend>
           <div className="space-y-2">
             {options.length === 0 && <p className="text-sm text-muted">Loading delivery options...</p>}
             {options.map((o) => (
               <label key={o.id} className={`flex items-start gap-3 p-4 cursor-pointer rounded-sm option ${optionId === o.id ? "option-active" : ""}`}>
-                <input type="radio" name="shipping" checked={optionId === o.id} onChange={() => setOptionId(o.id)} className="mt-1 accent-[var(--ink)]" />
+                <input type="radio" name="shipping" checked={optionId === o.id} onChange={() => setOptionId(o.id)} className="mt-1 accent-[var(--brand)]" />
                 <span className="flex-1">
                   <span className="flex justify-between text-sm font-medium"><span>{o.name}</span><span>{o.amount ? formatMoney(o.amount) : "Free"}</span></span>
                   {o.type?.description && <span className="block text-xs text-muted mt-1">{o.type.description}</span>}
@@ -195,9 +195,9 @@ export function CheckoutForm() {
         </fieldset>
 
         <fieldset>
-          <legend className="eyebrow text-rose-deep mb-4">4 · Payment</legend>
+          <legend className="eyebrow text-brand mb-4">4 · Payment</legend>
           <label className="flex items-start gap-3 p-4 rounded-sm option option-active">
-            <input type="radio" checked readOnly className="mt-1 accent-[var(--ink)]" />
+            <input type="radio" checked readOnly className="mt-1 accent-[var(--brand)]" />
             <span>
               <span className="block text-sm font-medium">Cash on delivery</span>
               <span className="block text-xs text-muted mt-1">Pay in cash when your order arrives. Card, JazzCash and Easypaisa are coming soon.</span>
@@ -207,7 +207,7 @@ export function CheckoutForm() {
       </div>
 
       <aside className="border border-line bg-paper shadow-soft p-5 h-fit lg:sticky lg:top-28">
-        <h2 className="eyebrow text-rose-deep">Your order</h2>
+        <h2 className="eyebrow text-brand">Your order</h2>
         <ul className="mt-4 space-y-4">
           {cart.items.map((i) => (
             <li key={i.id} className="flex gap-3">

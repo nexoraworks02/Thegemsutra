@@ -125,7 +125,7 @@ export function Designer({ product }: { product: ProductDef }) {
       <Gallery product={product} config={config} />
 
       <div>
-        <p className="eyebrow text-rose-deep">{product.badges?.[0] ?? "Personalized"}</p>
+        <p className="eyebrow text-brand">{product.badges?.[0] ?? "Personalized"}</p>
         <h1 className="mt-2 text-3xl sm:text-4xl leading-tight">{product.name}</h1>
         <div className="mt-3 flex items-baseline gap-3">
           <span className="text-2xl font-medium">{formatMoney(price.total)}</span>
@@ -296,20 +296,20 @@ export function Designer({ product }: { product: ProductDef }) {
         {error && <p role="alert" className="mt-3 text-sm text-sale">{error}</p>}
 
         {added && (
-          <div role="status" className="mt-4 border border-blush bg-blush-tint p-4 flex items-center justify-between gap-4">
+          <div role="status" className="mt-4 border border-line bg-blush-tint p-4 flex items-center justify-between gap-4">
             <p className="text-sm">{editingLineId ? "Your bag item was updated." : "Added to your bag."}</p>
             <div className="flex gap-3 text-sm">
-              <Link href="/cart" className="text-rose-deep underline underline-offset-4 hover:text-ink">View bag</Link>
+              <Link href="/cart" className="text-brand underline underline-offset-4 hover:text-ink">View bag</Link>
               <Link href="/#collection" className="text-muted underline underline-offset-4">Keep shopping</Link>
             </div>
           </div>
         )}
 
         <ul className="mt-6 grid grid-cols-2 gap-3 text-xs text-muted">
-          <li><span className="text-rose" aria-hidden>✦</span> Hand-made in 5-7 days</li>
-          <li><span className="text-rose" aria-hidden>✦</span> Free delivery · COD</li>
-          <li><span className="text-rose" aria-hidden>✦</span> 30-day returns</li>
-          <li><span className="text-rose" aria-hidden>✦</span> Free resizing</li>
+          <li><span className="text-brand" aria-hidden>✦</span> Hand-made in 5-7 days</li>
+          <li><span className="text-brand" aria-hidden>✦</span> Free delivery · COD</li>
+          <li><span className="text-brand" aria-hidden>✦</span> 30-day returns</li>
+          <li><span className="text-brand" aria-hidden>✦</span> Free resizing</li>
         </ul>
         <p className="mt-6 text-xs text-muted">
           Share your design:{" "}
@@ -364,7 +364,7 @@ function Gallery({ product, config }: { product: ProductDef; config: DesignConfi
       <div className="relative aspect-[4/3] overflow-hidden rounded-sm tile">
         <img src={shown} alt={`${product.name} - your design`} className="h-full w-full object-cover" />
         {loading && (
-          <span className="absolute right-3 top-3 h-2 w-2 rounded-full bg-rose animate-ping" aria-label="Updating preview" />
+          <span className="absolute right-3 top-3 h-2 w-2 rounded-full bg-brand animate-ping" aria-label="Updating preview" />
         )}
       </div>
       <p className="mt-3 text-center text-xs text-muted">Live preview of your design · updates as you choose</p>
@@ -392,7 +392,7 @@ function Step(props: {
           <span className={`block eyebrow ${props.error ? "text-sale" : ""}`}>{props.title}</span>
           <span className="block text-sm text-muted mt-0.5 truncate">{props.summary}</span>
         </span>
-        <span className="text-xl text-rose-deep w-5 text-center" aria-hidden>{isOpen ? "−" : "+"}</span>
+        <span className="text-xl text-brand w-5 text-center" aria-hidden>{isOpen ? "−" : "+"}</span>
       </button>
       {isOpen && <div className="pb-5">{props.children}</div>}
     </section>
@@ -461,7 +461,7 @@ function StonePicker({ slot, value, onChange }: { slot: StoneSlotDef; value: str
       )}
       {groups.map((g) => (
         <div key={g.title} className="mb-3">
-          <p className="text-[11px] uppercase tracking-[0.14em] text-rose-deep mb-2">{g.title}</p>
+          <p className="text-[11px] uppercase tracking-[0.14em] text-brand mb-2">{g.title}</p>
           <div className="grid grid-cols-6 gap-2">
             {g.items.map((s) => {
               const price = slot.prices[s.code] ?? 0;

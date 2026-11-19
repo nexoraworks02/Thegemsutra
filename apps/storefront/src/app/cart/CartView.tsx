@@ -43,7 +43,7 @@ export function CartView() {
       </ul>
 
       <aside className="border border-line bg-paper shadow-soft p-5 h-fit lg:sticky lg:top-28">
-        <h2 className="eyebrow text-rose-deep">Order summary</h2>
+        <h2 className="eyebrow text-brand">Order summary</h2>
         <dl className="mt-4 space-y-2 text-sm">
           <div className="flex justify-between"><dt>Subtotal</dt><dd>{formatMoney(cart.item_total ?? cart.total)}</dd></div>
           <div className="flex justify-between"><dt>Delivery</dt><dd>Free (express available)</dd></div>
@@ -83,7 +83,7 @@ export function CartLine({ line, busy, onRemove }: { line: StoreLineItem; busy?:
         )}
         {onRemove && (
           <div className="mt-4 flex gap-5 text-sm">
-            {modifyHref && <Link href={modifyHref} className="text-rose-deep underline underline-offset-4 hover:text-ink">Modify item</Link>}
+            {modifyHref && <Link href={modifyHref} className="text-brand underline underline-offset-4 hover:text-ink">Modify item</Link>}
             <button type="button" onClick={onRemove} disabled={busy} className="text-muted underline underline-offset-4 hover:text-sale disabled:opacity-50">
               {busy ? "Removing..." : "Remove"}
             </button>

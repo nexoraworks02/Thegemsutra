@@ -1,26 +1,32 @@
 @import "tailwindcss";
 
 /*
- * THEJEMSUTRA - premium blush & warm beige.
- * Ivory and beige carry the page, espresso carries text and primary actions,
- * blush / rose are deliberate accents. Contrast notes are WCAG ratios on ivory.
+ * THEGEMSUTRA - official brand palette (designer's brand board).
+ * Official colours (unchanged): Burgundy #4E091B, Soft Blush #FFE5D9,
+ * White #FFFFFF, Near Black #191919. Other values are accessible shades derived
+ * from them. Contrast notes are WCAG ratios on white unless stated.
  * Jewelry colours (metals, stones, renders) never come from these tokens.
  */
 :root {
-  --ivory: #fffaf6; /* page background */
-  --paper: #ffffff; /* cards, form fields */
-  --sand: #f5e8da; /* warm beige: footer, bands, skeletons */
-  --blush-tint: #faefef; /* selected options, soft highlights */
-  --blush: #e8b4b8; /* decorative accent only - espresso text on it (7.0:1) */
-  --rose: #b77983; /* large text (>=24px) and icons only (3.3:1) */
-  --rose-deep: #8e5560; /* small accent text, links, hover (5.6:1) */
-  --ink: #3e3030; /* espresso: headings, body, primary buttons (12.1:1) */
-  --muted: #6e5e58; /* secondary text (6.0:1; 5.1:1 on beige) */
-  --line: #e2cfc3; /* decorative hairlines */
-  --line-strong: #a0877f; /* form field boundaries (3:1) */
-  --sale: #a13d3d; /* sale prices, errors (6.2:1) */
+  /* Official */
+  --brand: #4e091b; /* Burgundy: primary buttons, links, accents, selected options (15.2:1) */
+  --blush: #ffe5d9; /* Soft Blush: section bands, badges, text on burgundy (12.7:1) */
+  --white: #ffffff;
+  --ink: #191919; /* Near Black: headings and body text (17.6:1; 14.6:1 on blush) */
+  /* Derived */
+  --brand-hover: #6e1a2e; /* button / link hover (white text 11.4:1) */
+  --brand-press: #33040f; /* pressed buttons (white text 18:1) */
+  --blush-tint: #fff5f0; /* selected-option tint, quiet panels */
+  --muted: #5c5054; /* secondary text (7.7:1; 6.4:1 on blush) */
+  --line: #ebcfc3; /* decorative hairlines */
+  --line-strong: #9a7f78; /* form field boundaries (3.7:1) */
+  --sale: #b3261e; /* sale prices and errors, distinct from burgundy (6.5:1; 5.4:1 on blush) */
+  /* Roles kept from the previous theme (same names, new values) */
+  --ivory: var(--white); /* page background */
+  --paper: var(--white); /* cards, form fields */
+  --sand: var(--blush); /* bands and loading skeletons */
   /* Product image tiles match the rendered images' own background (#f7f4ef) so
-     framed renders look intentional on ivory. Do not change the image service. */
+     framed renders look intentional. Do not change the image service. */
   --tile: #f7f4ef;
 }
 
@@ -30,15 +36,16 @@
   --color-sand: var(--sand);
   --color-blush-tint: var(--blush-tint);
   --color-blush: var(--blush);
-  --color-rose: var(--rose);
-  --color-rose-deep: var(--rose-deep);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-press: var(--brand-press);
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
   --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-sale: var(--sale);
   --color-tile: var(--tile);
-  --shadow-soft: 0 1px 2px rgb(62 48 48 / 0.04), 0 10px 30px -14px rgb(62 48 48 / 0.16);
+  --shadow-soft: 0 1px 2px rgb(25 25 25 / 0.04), 0 10px 30px -14px rgb(78 9 27 / 0.18);
   --font-serif: "Playfair Display", Georgia, serif;
   --font-sans: "Montserrat", system-ui, sans-serif;
   --font-script: "Great Vibes", cursive;
@@ -66,7 +73,7 @@ h1, h2, h3, .font-serif {
 
 /* One consistent, visible keyboard focus ring everywhere. */
 :focus-visible {
-  outline: 2px solid var(--rose-deep);
+  outline: 2px solid var(--brand);
   outline-offset: 2px;
 }
 
@@ -78,51 +85,52 @@ h1, h2, h3, .font-serif {
 }
 
 @layer components {
-  /* Primary action: espresso, deep rose on hover. */
+  /* Primary action: burgundy; lighter on hover, darker when pressed. */
   .btn-primary {
     display: inline-block;
     text-align: center;
-    background: var(--ink);
-    color: var(--ivory);
+    background: var(--brand);
+    color: var(--white);
     font-size: 13px;
     letter-spacing: 0.16em;
     text-transform: uppercase;
     transition: background-color 0.2s ease, transform 0.1s ease;
   }
   .btn-primary:hover {
-    background: var(--rose-deep);
+    background: var(--brand-hover);
   }
   .btn-primary:active {
+    background: var(--brand-press);
     transform: translateY(1px);
   }
   .btn-primary:disabled,
   .btn-primary[aria-disabled="true"] {
-    background: var(--ink);
+    background: var(--brand);
     opacity: 0.55;
     cursor: not-allowed;
     transform: none;
   }
 
-  /* Secondary action: espresso outline. */
+  /* Secondary action: burgundy outline. */
   .btn-secondary {
     display: inline-block;
     text-align: center;
-    border: 1px solid var(--ink);
-    color: var(--ink);
+    border: 1px solid var(--brand);
+    color: var(--brand);
     font-size: 13px;
     letter-spacing: 0.16em;
     text-transform: uppercase;
     transition: background-color 0.2s ease, color 0.2s ease;
   }
   .btn-secondary:hover {
-    background: var(--ink);
-    color: var(--ivory);
+    background: var(--brand);
+    color: var(--white);
   }
   .btn-secondary:active {
     transform: translateY(1px);
   }
 
-  /* Form fields: 3:1 boundary, espresso + rose ring on focus, red on error. */
+  /* Form fields: 3:1 boundary, burgundy border + ring on focus, red on error. */
   .field {
     width: 100%;
     border: 1px solid var(--line-strong);
@@ -136,8 +144,8 @@ h1, h2, h3, .font-serif {
   }
   .field:focus {
     outline: none;
-    border-color: var(--ink);
-    box-shadow: 0 0 0 3px var(--blush-tint), 0 0 0 4px var(--rose);
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px var(--blush-tint), 0 0 0 4px var(--brand);
   }
   .field[aria-invalid="true"],
   .field-error,
@@ -150,7 +158,7 @@ h1, h2, h3, .font-serif {
   }
 
   /* Selectable option (metal, stone, font, packaging, delivery).
-     Selected = espresso double-weight border + blush tint, so it is
+     Selected = burgundy double-weight border + blush tint, so it is
      recognisable by shape, not only by colour. */
   .option {
     border: 1px solid var(--line);
@@ -158,7 +166,7 @@ h1, h2, h3, .font-serif {
     transition: border-color 0.15s ease, background-color 0.15s ease;
   }
   .option:hover {
-    border-color: var(--rose);
+    border-color: var(--line-strong);
   }
   .option-quiet {
     border: 1px solid transparent;
@@ -169,8 +177,8 @@ h1, h2, h3, .font-serif {
   }
   .option-active,
   .option-active:hover {
-    border-color: var(--ink);
-    box-shadow: inset 0 0 0 1px var(--ink);
+    border-color: var(--brand);
+    box-shadow: inset 0 0 0 1px var(--brand);
     background: var(--blush-tint);
   }
 
