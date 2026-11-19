@@ -52,6 +52,8 @@ export interface NecklineEstimate {
   /** Shoulder-line angle in radians (0 = level). */
   rotation: number;
   shoulderWidth: number;
+  /** How far the neck centre sits above the shoulder line (photo px, after the chin clamp). */
+  neckLift: number;
   /** 0..1 - lowest visibility of the landmarks used. */
   confidence: number;
 }
@@ -108,6 +110,7 @@ export function estimateNeckline(
     center,
     rotation: Math.atan2(dir.y, dir.x),
     shoulderWidth: sw,
+    neckLift: lift,
     confidence: vis,
   };
 }
@@ -168,6 +171,58 @@ export function chooseSubject(
   return { estimate: main, issue: null, ...base };
 }
 
+// ---- Pendant drop (how far below the neck the name/pendant hangs) ----
+
+/**
+ * Product geometry for the pendant drop, from the design's manifest (/tryon-meta).
+ * Drops are in NECKLACE-IMAGE pixels: the vertical distance from the neck-anchor
+ * line to the pendant centre in the rendered necklace image.
+ */
+export interface PendantGeometry {
+  /** Drop drawn when nothing else is known (the artwork's own default). */
+  defaultDrop: number;
+  /** Range the renderer supports (the pendant must stay inside the image). */
+  minDrop: number;
+  maxDrop: number;
+  /** Drops are rounded to this step so similar photos share cached renders. */
+  step: number;
+  /**
+   * APPROXIMATE height of the pendant centre BELOW THE SHOULDER LINE, as a
+   * fraction of shoulder width, for this chain length. Shoulder landmarks give
+   * no real-world size, so this is a tuned visual ratio, not a measurement;
+   * the customer can adjust the drop.
+   */
+  belowShoulders: number;
+}
+
+/**
+ * Pendant drop to request from the renderer, in necklace-image pixels.
+ *
+ * With a detected person the pendant is anchored to the SHOULDER LINE (where a
+ * chain of a given length rests on the chest), not to the estimated neck base:
+ * the neck base moves up or down with the chin (see estimateNeckline), and a
+ * fixed drop from it put the pendant too low on tight or tilted framings.
+ *   drop (photo px) = neck lift above the shoulders + belowShoulders x shoulder width
+ * then converted to necklace-image px with the same scale used to fit the neck
+ * anchors. Without a person (manual placement) the artwork's default drop is used.
+ * `dropScale` is the customer's adjustment (1 = as estimated). The result is
+ * rounded to `step` and clamped to what the renderer supports.
+ */
+export function pendantDrop(
+  geometry: PendantGeometry,
+  opts: { estimate?: NecklineEstimate | null; anchors?: NecklaceAnchors; dropScale?: number } = {},
+): number {
+  let drop = geometry.defaultDrop;
+  const { estimate, anchors } = opts;
+  if (estimate && anchors) {
+    const photoToImage = dist(anchors.neckLeft, anchors.neckRight) / dist(estimate.neckLeft, estimate.neckRight);
+    drop = (estimate.neckLift + geometry.belowShoulders * estimate.shoulderWidth) * photoToImage;
+  }
+  drop *= opts.dropScale ?? 1;
+  const stepped = Math.round(drop / geometry.step) * geometry.step;
+  return Math.min(geometry.maxDrop, Math.max(geometry.minDrop, stepped));
+}
+
 /** Necklace image geometry, from the image service (/tryon-meta). */
 export interface NecklaceAnchors {
   width: number;
@@ -216,15 +271,18 @@ export interface Adjustments {
   dy: number;
   scale: number; // multiplier
   rotationDeg: number;
+  /** Pendant drop multiplier (1 = as estimated); changes the rendered chain, not the image scale. */
+  drop: number;
 }
 
-export const NO_ADJUSTMENT: Adjustments = { dx: 0, dy: 0, scale: 1, rotationDeg: 0 };
-export const ADJUST_LIMITS = { scale: [0.4, 2.5], rotationDeg: [-45, 45] } as const;
+export const NO_ADJUSTMENT: Adjustments = { dx: 0, dy: 0, scale: 1, rotationDeg: 0, drop: 1 };
+export const ADJUST_LIMITS = { scale: [0.4, 2.5], rotationDeg: [-45, 45], drop: [0.6, 1.5] } as const;
 
 export type AdjustAction =
   | { type: "move"; dx: number; dy: number }
   | { type: "scale"; value: number }
   | { type: "rotate"; value: number }
+  | { type: "drop"; value: number }
   | { type: "reset" };
 
 const clamp = (v: number, [lo, hi]: readonly [number, number]) => Math.min(hi, Math.max(lo, v));
@@ -237,6 +295,8 @@ export function adjustReducer(state: Adjustments, action: AdjustAction): Adjustm
       return { ...state, scale: clamp(action.value, ADJUST_LIMITS.scale) };
     case "rotate":
       return { ...state, rotationDeg: clamp(action.value, ADJUST_LIMITS.rotationDeg) };
+    case "drop":
+      return { ...state, drop: clamp(action.value, ADJUST_LIMITS.drop) };
     case "reset":
       return NO_ADJUSTMENT;
   }

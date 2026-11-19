@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import sharp, { type OverlayOptions } from "sharp";
 import { METAL_BY_CODE, type DesignConfig, type ProductDef } from "@jemsutra/design-engine";
 import { engravingSvg } from "./engrave";
-import { necklaceSvg } from "./necklace";
+import { necklaceSvg, withDrop } from "./necklace";
 import type { ProductManifest, SlotPlacement } from "./manifest";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -54,6 +54,8 @@ export interface RenderOptions {
   view?: string;
   width?: number;
   format?: "webp" | "png" | "jpeg";
+  /** Try-on necklaces only: pendant drop in image px (see necklace.ts withDrop). Ignored for other views. */
+  drop?: number;
 }
 
 /** Compose metal body + stone settings + stones + engraving into one image. */
@@ -78,7 +80,7 @@ export async function renderDesign(
   if (view.nameplate) {
     // Try-on prototype: a whole name necklace drawn from the customer's exact name.
     const name = config.engravings[view.nameplate.textKey] ?? "";
-    overlays = [{ input: Buffer.from(necklaceSvg(name, config.font, view.nameplate, metal, view.width, view.height)) }];
+    overlays = [{ input: Buffer.from(necklaceSvg(name, config.font, withDrop(view.nameplate, opts.drop), metal, view.width, view.height)) }];
   } else {
     overlays = [{ input: await layer(path.join(dir, `metal-${metal.code}.png`)) }];
 

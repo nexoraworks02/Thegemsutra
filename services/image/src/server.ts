@@ -4,6 +4,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { configFromQuery, configToQuery } from "@jemsutra/design-engine";
 import { getDesign } from "./designs";
+import { defaultDrop } from "./necklace";
 import { RenderError, closestWidth, loadManifest, renderDesign, renderStone } from "./render";
 
 /**
@@ -45,12 +46,15 @@ app.get("/img/:style/:file", async (c) => {
   const view = url.searchParams.get("v") ?? undefined;
   const width = closestWidth(Number(url.searchParams.get("w") ?? 800));
   const canonical = configToQuery(product, config, { include: "visual" }).toString();
-  const key = createHash("sha1").update(`${product.styleCode}|${found.version}|${view}|${width}|${format}|${canonical}`).digest("hex");
+  // Try-on necklaces: optional pendant drop (rounded and clamped again by the renderer).
+  const dr = url.searchParams.get("dr");
+  const drop = dr != null && Number.isFinite(Number(dr)) ? Math.round(Math.min(2000, Math.max(0, Number(dr))) / 10) * 10 : undefined;
+  const key = createHash("sha1").update(`${product.styleCode}|${found.version}|${view}|${width}|${format}|${canonical}${drop != null ? `|dr${drop}` : ""}`).digest("hex");
 
   let hit = cache.get(key);
   if (!hit) {
     try {
-      hit = await renderDesign(product, config, { view, width, format });
+      hit = await renderDesign(product, config, { view, width, format, drop });
       remember(key, hit);
     } catch (err) {
       if (err instanceof RenderError) return c.text(err.message, err.status as 404);
@@ -80,6 +84,7 @@ app.get("/tryon-meta/:style", async (c) => {
     neckLeft: v.nameplate!.neckLeft,
     neckRight: v.nameplate!.neckRight,
     mmPerPx: v.nameplate!.mmPerPx,
+    pendant: v.nameplate!.pendant ? { defaultDrop: defaultDrop(v.nameplate!), ...v.nameplate!.pendant } : null,
     approximate: true,
   });
 });

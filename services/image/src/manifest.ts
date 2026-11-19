@@ -49,6 +49,17 @@ export interface NameplateSpec {
   chainWidth?: number;
   /** APPROXIMATE millimetres per pixel (demo geometry, not measured from CAD). */
   mmPerPx: number;
+  /**
+   * Pendant drop range for try-on (image px from the neck-anchor line to the
+   * pendant centre). The default drop is plateCenter.y - neck anchor y.
+   */
+  pendant?: {
+    minDrop: number;
+    maxDrop: number;
+    step: number;
+    /** APPROXIMATE pendant centre below the shoulder line, as a fraction of shoulder width (see engine pendantDrop). */
+    belowShoulders: number;
+  };
 }
 
 export interface ViewManifest {

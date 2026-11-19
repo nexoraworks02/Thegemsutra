@@ -26,6 +26,25 @@ export interface NameplateLayout {
 
 const PLACEHOLDER_NAME = "Name";
 
+/** Default pendant drop of the artwork: neck-anchor line to pendant centre (image px). */
+export function defaultDrop(spec: NameplateSpec): number {
+  return spec.plateCenter.y - (spec.neckLeft.y + spec.neckRight.y) / 2;
+}
+
+/**
+ * The nameplate spec with the pendant moved to a requested drop.
+ * No drop (or no pendant range in the manifest) = the artwork unchanged.
+ * Requested drops are rounded to the manifest step and clamped to its range,
+ * so arbitrary values can't create unlimited render variants.
+ */
+export function withDrop(spec: NameplateSpec, drop?: number): NameplateSpec {
+  if (drop == null || !Number.isFinite(drop) || !spec.pendant) return spec;
+  const { minDrop, maxDrop, step } = spec.pendant;
+  const d = Math.min(maxDrop, Math.max(minDrop, Math.round(drop / step) * step));
+  const neckY = (spec.neckLeft.y + spec.neckRight.y) / 2;
+  return { ...spec, plateCenter: { x: spec.plateCenter.x, y: neckY + d } };
+}
+
 export function nameplateLayout(rawText: string, fontCode: string, spec: NameplateSpec): NameplateLayout {
   const text = rawText.trim() || PLACEHOLDER_NAME;
   const font = loadFont(fontCode);

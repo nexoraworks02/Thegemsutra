@@ -14,9 +14,11 @@ import {
   estimateNeckline,
   fallbackPlacement,
   necklaceMatrix,
+  pendantDrop,
   placeNecklace,
   validateProductDef,
   type NecklaceAnchors,
+  type PendantGeometry,
   type PoseLandmark,
 } from "./index";
 
@@ -172,13 +174,47 @@ describe("chooseSubject", () => {
   });
 });
 
+describe("pendant drop", () => {
+  // Matches assets/products/JSN900/manifest.json (default drop = plateCenter.y - neck y).
+  const geometry: PendantGeometry = { defaultDrop: 620, minDrop: 380, maxDrop: 740, step: 20, belowShoulders: 0.09 };
+
+  it("uses the artwork's default drop when no person was detected (manual placement)", () => {
+    expect(pendantDrop(geometry)).toBe(620);
+    expect(pendantDrop(geometry, { dropScale: 0.8 })).toBe(500); // 496 rounded to the 20 px step
+  });
+
+  it("matches the artwork's default on a typical frontal portrait", () => {
+    const { image, lm } = FIXTURES.frontalPortrait;
+    const est = estimateNeckline(lm, image)!;
+    // lift 0.16 x 500 = 80 px, + 0.09 x 500 = 45 px -> 125 photo px; neck span 160 px -> 800 image px: x5 = 625 -> 620
+    expect(est.neckLift).toBeCloseTo(80, 6);
+    expect(pendantDrop(geometry, { estimate: est, anchors })).toBe(620);
+  });
+
+  it("raises the pendant when the chin sits close to the shoulders (anchored to the shoulder line)", () => {
+    const { image, lm } = FIXTURES.closeCropChin;
+    const est = estimateNeckline(lm, image)!;
+    // the chin clamp lowers the neck base; a fixed drop from it would put the pendant too low
+    expect(est.neckLift).toBeLessThan(DEFAULT_NECKLINE.neckLift * est.shoulderWidth);
+    expect(pendantDrop(geometry, { estimate: est, anchors })).toBeLessThan(geometry.defaultDrop);
+  });
+
+  it("applies the customer's drop adjustment and stays inside the renderable range", () => {
+    const { image, lm } = FIXTURES.frontalPortrait;
+    const est = estimateNeckline(lm, image)!;
+    expect(pendantDrop(geometry, { estimate: est, anchors, dropScale: 1.1 })).toBe(680);
+    expect(pendantDrop(geometry, { estimate: est, anchors, dropScale: 1.5 })).toBe(740);
+    expect(pendantDrop(geometry, { dropScale: 0.1 })).toBe(380);
+  });
+});
+
 describe("manual adjustments", () => {
   it("moves, scales, rotates and resets", () => {
     let s = adjustReducer(NO_ADJUSTMENT, { type: "move", dx: 10, dy: -5 });
     s = adjustReducer(s, { type: "move", dx: 5, dy: 5 });
     s = adjustReducer(s, { type: "scale", value: 1.3 });
     s = adjustReducer(s, { type: "rotate", value: 12 });
-    expect(s).toEqual({ dx: 15, dy: 0, scale: 1.3, rotationDeg: 12 });
+    expect(s).toEqual({ dx: 15, dy: 0, scale: 1.3, rotationDeg: 12, drop: 1 });
     expect(adjustReducer(s, { type: "reset" })).toEqual(NO_ADJUSTMENT);
   });
 
@@ -186,10 +222,12 @@ describe("manual adjustments", () => {
     expect(adjustReducer(NO_ADJUSTMENT, { type: "scale", value: 9 }).scale).toBe(ADJUST_LIMITS.scale[1]);
     expect(adjustReducer(NO_ADJUSTMENT, { type: "scale", value: 0 }).scale).toBe(ADJUST_LIMITS.scale[0]);
     expect(adjustReducer(NO_ADJUSTMENT, { type: "rotate", value: -90 }).rotationDeg).toBe(-45);
+    expect(adjustReducer(NO_ADJUSTMENT, { type: "drop", value: 3 }).drop).toBe(ADJUST_LIMITS.drop[1]);
+    expect(adjustReducer(NO_ADJUSTMENT, { type: "drop", value: 0.1 }).drop).toBe(ADJUST_LIMITS.drop[0]);
   });
 
   it("applies adjustments on top of the automatic placement", () => {
-    const t = applyAdjustments({ x: 100, y: 200, scale: 0.5, rotation: 0 }, { dx: 10, dy: 20, scale: 2, rotationDeg: 90 });
+    const t = applyAdjustments({ x: 100, y: 200, scale: 0.5, rotation: 0 }, { dx: 10, dy: 20, scale: 2, rotationDeg: 90, drop: 1 });
     expect(t.x).toBe(110);
     expect(t.y).toBe(220);
     expect(t.scale).toBe(1);

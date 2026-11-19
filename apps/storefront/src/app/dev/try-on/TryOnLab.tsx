@@ -14,10 +14,12 @@ import {
   fallbackPlacement,
   necklaceMatrix,
   normalizeConfig,
+  pendantDrop,
   placeNecklace,
   sanitizeEngraving,
   type NecklaceAnchors,
   type NecklineEstimate,
+  type PendantGeometry,
   type PlacementTransform,
 } from "@jemsutra/design-engine";
 import { IMAGE_URL } from "@/lib/media";
@@ -39,6 +41,7 @@ export function TryOnLab() {
   const [font, setFont] = useState(PRODUCT.defaultFont);
   const [metal, setMetal] = useState(PRODUCT.defaultMetal);
   const [anchors, setAnchors] = useState<NecklaceAnchors | null>(null);
+  const [pendant, setPendant] = useState<PendantGeometry | null>(null);
   const [necklace, setNecklace] = useState<HTMLImageElement | null>(null);
   const [photo, setPhoto] = useState<HTMLCanvasElement | null>(null);
   const [estimate, setEstimate] = useState<NecklineEstimate | null>(null);
@@ -49,32 +52,72 @@ export function TryOnLab() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drag = useRef<{ x: number; y: number } | null>(null);
 
-  // 1. Necklace geometry (neck anchors) from the image service.
+  // 1. Necklace geometry (neck anchors, pendant drop range) from the image service.
   useEffect(() => {
     fetch(`${IMAGE_URL}/tryon-meta/${PRODUCT.styleCode}`)
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`status ${r.status}`))))
-      .then((m: NecklaceAnchors) => setAnchors(m))
+      .then((m: NecklaceAnchors & { pendant?: PendantGeometry | null }) => {
+        setAnchors(m);
+        setPendant(m.pendant ?? null);
+      })
       .catch((e) => setStatus({ kind: "error", text: `Image service not reachable or try-on demo disabled (ENABLE_TRYON_DEMO). ${e.message}` }));
   }, []);
 
-  // 2. The personalised, transparent necklace image (debounced while typing).
+  // 2. Pendant drop for this photo (necklace-image px), incl. the customer's adjustment.
+  const drop = useMemo(
+    () =>
+      pendant && anchors
+        ? pendantDrop(pendant, { estimate, anchors, dropScale: adj.drop })
+        : null,
+    [pendant, anchors, estimate, adj.drop],
+  );
+
+  // 3. The personalised, transparent necklace image (debounced while typing).
   const config = useMemo(() => normalizeConfig(PRODUCT, { metal, font, engravings: { e1: name } }), [metal, font, name]);
   const necklaceUrl = useMemo(() => {
     const q = configToQuery(PRODUCT, config, { include: "visual" });
     q.set("w", "1200");
+    if (drop != null) q.set("dr", String(drop));
     return `${IMAGE_URL}/img/${PRODUCT.styleCode}/${PRODUCT.slug}.png?${q.toString()}`;
-  }, [config]);
+  }, [config, drop]);
 
+  // Downloaded ONCE per design: the same in-memory copy (object URL) feeds the canvas
+  // and the preview thumbnail, so there is no second request and the canvas stays
+  // exportable (same-origin blob). A newer design aborts an older, slower request,
+  // so a late response can never replace the current necklace.
+  const objectUrl = useRef<string | null>(null);
   useEffect(() => {
-    const t = setTimeout(() => {
-      const img = new Image();
-      img.crossOrigin = "anonymous"; // needed so the canvas can be downloaded
-      img.onload = () => setNecklace(img);
-      img.onerror = () => setStatus({ kind: "error", text: "Could not load the necklace image from the image service." });
-      img.src = necklaceUrl;
+    const ctrl = new AbortController();
+    const t = setTimeout(async () => {
+      try {
+        const res = await fetch(necklaceUrl, { signal: ctrl.signal });
+        if (!res.ok) throw new Error(`status ${res.status}`);
+        const url = URL.createObjectURL(await res.blob());
+        const img = new Image();
+        img.onload = () => {
+          if (ctrl.signal.aborted) return URL.revokeObjectURL(url);
+          const previous = objectUrl.current;
+          objectUrl.current = url;
+          setNecklace(img);
+          if (previous) URL.revokeObjectURL(previous);
+        };
+        img.onerror = () => {
+          URL.revokeObjectURL(url);
+          setStatus({ kind: "error", text: "Could not read the necklace image from the image service." });
+        };
+        img.src = url;
+      } catch (e) {
+        if (!ctrl.signal.aborted) setStatus({ kind: "error", text: `Could not load the necklace image from the image service (${(e as Error).message}).` });
+      }
     }, 250);
-    return () => clearTimeout(t);
+    return () => {
+      clearTimeout(t);
+      ctrl.abort();
+    };
   }, [necklaceUrl]);
+  useEffect(() => () => {
+    if (objectUrl.current) URL.revokeObjectURL(objectUrl.current);
+  }, []);
 
   // Anchors in the loaded image's pixel space (in case a different width is served).
   const scaledAnchors = useMemo<NecklaceAnchors | null>(() => {
@@ -285,6 +328,13 @@ export function TryOnLab() {
               <input type="range" min={ADJUST_LIMITS.rotationDeg[0]} max={ADJUST_LIMITS.rotationDeg[1]} step={1} value={adj.rotationDeg}
                 onChange={(e) => dispatch({ type: "rotate", value: Number(e.target.value) })} className="w-full" />
             </label>
+            {pendant && (
+              <label className="block text-xs text-muted">
+                Chain drop {Math.round(adj.drop * 100)}%
+                <input type="range" min={ADJUST_LIMITS.drop[0]} max={ADJUST_LIMITS.drop[1]} step={0.05} value={adj.drop}
+                  onChange={(e) => dispatch({ type: "drop", value: Number(e.target.value) })} className="w-full" />
+              </label>
+            )}
             <div className="flex flex-wrap gap-2 text-xs">
               {([["↑", 0, -1], ["↓", 0, 1], ["←", -1, 0], ["→", 1, 0]] as const).map(([l, x, y]) => (
                 <button key={l} type="button" aria-label={`Move ${l}`} onClick={() => dispatch({ type: "move", dx: x * (photo.width / 200), dy: y * (photo.width / 200) })}

@@ -8,8 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
-    "predev": "node scripts/copy-mediapipe.mjs",
-    "prebuild": "node scripts/copy-mediapipe.mjs"
+    "predev": "node scripts/copy-mediapipe.mjs dev",
+    "prebuild": "node scripts/copy-mediapipe.mjs build"
   },
   "dependencies": {
     "@fontsource/great-vibes": "^5.1.0",

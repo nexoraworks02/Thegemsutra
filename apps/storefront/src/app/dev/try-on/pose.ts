@@ -7,12 +7,11 @@ import type { PoseLandmark } from "@jemsutra/design-engine";
  * Runs entirely in the browser: the photo is never uploaded.
  *
  * - WASM runtime: served from our own /mediapipe/wasm (copied from node_modules).
- * - Model: Google's official pose_landmarker_lite.task (public file, no user data
- *   sent). Set NEXT_PUBLIC_POSE_MODEL_URL to self-host it.
+ * - Model: pose_landmarker_lite.task, vendored in tryon-assets/ and served from our
+ *   own /mediapipe/models (no third-party request). NEXT_PUBLIC_POSE_MODEL_URL can
+ *   point elsewhere (e.g. our own CDN).
  */
-const MODEL_URL =
-  process.env.NEXT_PUBLIC_POSE_MODEL_URL ??
-  "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task";
+const MODEL_URL = process.env.NEXT_PUBLIC_POSE_MODEL_URL || "/mediapipe/models/pose_landmarker_lite.task";
 
 type Landmarker = { detect(image: HTMLCanvasElement | ImageBitmap): { landmarks: PoseLandmark[][] }; close(): void };
 

@@ -30,7 +30,8 @@ The readiness scores in the review added up to **2.5 / 10, not 3.5 / 10**. The f
 | Necklace geometry endpoint | `GET /tryon-meta/:style` in `services/image/src/server.ts` |
 | Demo geometry | `assets/products/JSN900/manifest.json` |
 | Developer page | `apps/storefront/src/app/dev/try-on/page.tsx`, `TryOnLab.tsx`, `pose.ts` |
-| Self-hosted MediaPipe WASM | `apps/storefront/scripts/copy-mediapipe.mjs` → `public/mediapipe/wasm` (git-ignored, copied on `dev`/`build`) |
+| Self-hosted MediaPipe WASM + pose model | `apps/storefront/scripts/copy-mediapipe.mjs` → `public/mediapipe/{wasm,models}` (git-ignored; copied in `dev`, or in a build only with `ENABLE_TRYON_DEMO=true`). Model vendored in `apps/storefront/tryon-assets/` (see its README) |
+| Developer-only route | `apps/storefront/src/app/dev/try-on/page.dev.tsx`, included by `pageExtensions` in `next.config.ts` only in `next dev` or with `ENABLE_TRYON_DEMO=true` |
 
 Image URL (personalised, transparent): `GET /img/JSN900/demo-name-necklace.png?m=GP&e1=Ayesha&ef=script&w=1200`
 
@@ -75,6 +76,17 @@ Found in the Phase 0 verification on 13 everyday openly licensed portraits plus 
 
 All 15 previously auto-placed single-person photos are still placed automatically. Tests: 46 (38 engine incl. 5 new `chooseSubject` cases, 8 image service).
 
+## Stabilization (2026-11-19)
+
+| Issue | Root cause | Fix |
+|---|---|---|
+| Try-on code and assets in production builds | The route was compiled into every build (only a runtime 404), and `prebuild` always copied the 29 MB WASM runtime into `public/` | Page renamed `page.dev.tsx`; `next.config.ts` adds the `dev.tsx` page extension only in `next dev` or with `ENABLE_TRYON_DEMO=true`. The asset script copies MediaPipe files only then, and otherwise deletes `public/mediapipe` |
+| Pose model from Google | Default model URL pointed at Google model storage | Model vendored in `apps/storefront/tryon-assets/` (Apache-2.0, SHA-256 recorded) and served from `/mediapipe/models/` |
+| Necklace downloaded twice | Canvas image loaded with CORS, preview `<img>` without: two separate browser cache entries | One `fetch` per design; the same object URL feeds the canvas and the preview. Newer designs abort older requests |
+| Fixed pendant drop | Drop baked into the artwork as a fixed distance from the neck anchors | Renderer accepts a pendant drop (`dr`, nameplate views only, stepped and clamped by the manifest `pendant` range). The engine (`pendantDrop`) anchors the pendant to the shoulder line; the customer adjusts it with a "Chain drop" slider |
+
+Mobile validation: see `docs/tryon-mobile-checklist.md` (all tests pending, no physical devices tested).
+
 ## Temporary assets to replace with CAD-derived renders
 
 | Temporary | Replace with |
@@ -93,11 +105,10 @@ The **name itself is already production-accurate**: it is drawn from the real fo
 - Front-facing photos only; strong head turns or side views are not handled.
 - No hair or clothing occlusion: the chain is always drawn on top (hair over the neck will look wrong).
 - No lighting match: the metal does not pick up the photo's light or colour cast.
-- Plate drop is a fixed fraction of the estimated neck width, so on some framings it sits too low or high; chain-length options don't exist yet.
+- Pendant drop is anchored to the shoulder line with one approximate ratio (`belowShoulders` in the manifest) for the demo chain; it is a visual estimate, not a physical measurement. Chain-length options don't exist yet.
 - Size is approximate; no real-world calibration.
 - One person per photo: group photos and very small subjects are refused for automatic placement (manual placement still possible).
 - "Place by hand" on a photo with no visible neck still starts on the lower part of the face; the customer has to move it.
-- The pose model is loaded from Google model storage by default (set `NEXT_PUBLIC_POSE_MODEL_URL` to self-host).
 - Smoke-test portraits are mostly uniforms/spacesuits; real selfies with open necklines and varied skin tones, lighting and ages still need a broader test set.
 - No live camera, no 3D, no checkout integration (by design for Phase 0).
 

@@ -16,7 +16,8 @@
         "maxPlateWidth": 330,
         "fontSize": 96,
         "chainWidth": 5,
-        "mmPerPx": 0.1375
+        "mmPerPx": 0.1375,
+        "pendant": { "minDrop": 380, "maxDrop": 740, "step": 20, "belowShoulders": 0.09 }
       }
     }
   }
