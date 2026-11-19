@@ -16,9 +16,9 @@ export function Header() {
       <div className="bg-brand text-blush text-[11px] tracking-[0.18em] uppercase text-center py-2 px-4">
         Free delivery across Pakistan · Cash on delivery · 30-day returns
       </div>
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 h-16 flex items-center justify-between gap-6">
-        <Link href="/" aria-label={`${BRAND_NAME} home`} className="text-xl sm:text-2xl">
-          <Logo tone="onLight" height={36} />
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between gap-6">
+        <Link href="/" aria-label={`${BRAND_NAME} home`} className="shrink-0 text-xl sm:text-2xl">
+          <Logo tone="onLight" height={64} heightClass="h-12 sm:h-16" />
         </Link>
         <nav aria-label="Main" className="hidden md:flex items-center gap-8 text-[13px] tracking-[0.12em] uppercase">
           {NAV.map((n) => (

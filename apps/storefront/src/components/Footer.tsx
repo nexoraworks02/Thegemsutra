@@ -6,7 +6,7 @@ export function Footer() {
     <footer className="mt-24 bg-brand text-blush">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-12 grid gap-10 sm:grid-cols-3 text-sm">
         <div>
-          <p className="text-lg"><Logo tone="onDark" height={32} /></p>
+          <p className="text-lg"><Logo tone="onDark" height={80} heightClass="h-16 sm:h-20" /></p>
           <p className="mt-3 text-blush/85 leading-relaxed">
             Personalized jewelry, designed by you and hand-made by our artisans.
           </p>

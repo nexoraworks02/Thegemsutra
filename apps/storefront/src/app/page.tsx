@@ -88,7 +88,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section id="collection" className="mx-auto max-w-7xl px-4 sm:px-6 scroll-mt-28">
+      <section id="collection" className="mx-auto max-w-7xl px-4 sm:px-6 scroll-mt-32">
         <div className="flex items-end justify-between gap-4">
           <div>
             <p className="eyebrow text-brand">The collection</p>

@@ -42,7 +42,7 @@ export function CartView() {
         ))}
       </ul>
 
-      <aside className="border border-line bg-paper shadow-soft p-5 h-fit lg:sticky lg:top-28">
+      <aside className="border border-line bg-paper shadow-soft p-5 h-fit lg:sticky lg:top-32">
         <h2 className="eyebrow text-brand">Order summary</h2>
         <dl className="mt-4 space-y-2 text-sm">
           <div className="flex justify-between"><dt>Subtotal</dt><dd>{formatMoney(cart.item_total ?? cart.total)}</dd></div>

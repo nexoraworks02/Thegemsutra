@@ -15,15 +15,19 @@ export interface LogoAsset {
 }
 
 /**
- * Approved logo artwork. null = clean text fallback (current state).
- * When the designer's official files arrive, add them to /public/brand/ and set:
- *   onLight: the logo for white/blush backgrounds (e.g. burgundy artwork)
- *   onDark:  the logo for burgundy/near-black backgrounds (e.g. blush or white artwork)
- * Nothing else needs to change: every logo on the site goes through <Logo>.
+ * Logo artwork used by <Logo> (header, footer). null = clean text fallback.
+ *
+ * TEMPORARY: the designer's GEMSUTRA logo, extracted as exact vector paths from the
+ * brand board (see brand-assets/gemsutra-temporary/README.md). Replace both files
+ * with the corrected THEGEMSUTRA artwork when the designer supplies it; alt text
+ * and all customer-facing text already say THEGEMSUTRA.
+ *   onLight: near-black logo for white/blush backgrounds (as on the brand board)
+ *   onDark:  soft-blush logo for burgundy backgrounds (as on the brand board)
+ * width/height = the SVG viewBox, so proportions are always preserved.
  */
 export const LOGO_ASSETS: { onLight: LogoAsset | null; onDark: LogoAsset | null } = {
-  onLight: null,
-  onDark: null,
+  onLight: { src: "/brand/gemsutra-temporary-logo-on-light.svg", width: 431.434, height: 177.483 },
+  onDark: { src: "/brand/gemsutra-temporary-logo-on-dark.svg", width: 431.434, height: 177.483 },
 };
 
 /**

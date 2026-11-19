@@ -206,7 +206,7 @@ export function CheckoutForm() {
         </fieldset>
       </div>
 
-      <aside className="border border-line bg-paper shadow-soft p-5 h-fit lg:sticky lg:top-28">
+      <aside className="border border-line bg-paper shadow-soft p-5 h-fit lg:sticky lg:top-32">
         <h2 className="eyebrow text-brand">Your order</h2>
         <ul className="mt-4 space-y-4">
           {cart.items.map((i) => (

@@ -360,7 +360,7 @@ function Gallery({ product, config }: { product: ProductDef; config: DesignConfi
   }, [target, shown]);
 
   return (
-    <div className="lg:sticky lg:top-28 self-start">
+    <div className="lg:sticky lg:top-32 self-start">
       <div className="relative aspect-[4/3] overflow-hidden rounded-sm tile">
         <img src={shown} alt={`${product.name} - your design`} className="h-full w-full object-cover" />
         {loading && (
