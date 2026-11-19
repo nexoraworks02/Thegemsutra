@@ -1,6 +1,7 @@
 import { Badge, Button, Checkbox, Container, Heading, Input, Label, Select, Switch, Text, Textarea } from "@medusajs/ui";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { formatOptionAttributes, optionEdits, parseOptionAttributes, type OptionAttributes } from "@jemsutra/design-engine";
 
 // ---- Types (same shape as @jemsutra/design-engine ProductDef) ----
 type Prices = Record<string, number>;
@@ -10,18 +11,21 @@ interface Def {
   metals: { metal: string; price: number }[]; defaultMetal: string;
   stoneSlots: Slot[];
   stoneCount?: { min: number; max: number; included: number; pricePerExtra: number; defaultCount: number; slot: Omit<Slot, "key" | "label"> };
-  engravings: { key: string; label: string; maxChars: number; price: number }[];
+  engravings: { key: string; label: string; maxChars: number; price: number; required?: boolean }[];
+  options?: OptGroup[];
   fonts: string[]; defaultFont: string;
   size?: { min: number; max: number; step: number; surchargeFrom?: number; surcharge?: number; hint?: string };
   packaging: { code: string; name: string; price: number; description?: string }[];
   salePercent?: number; badges?: string[]; renderTemplate?: string;
 }
+interface OptChoice { code: string; name: string; price: number; attributes?: OptionAttributes }
+interface OptGroup { key: string; label: string; choices: OptChoice[]; defaultChoice?: string; visual?: boolean }
 interface Meta {
   metals: { code: string; name: string; color: string }[];
   stones: { code: string; name: string; kind: string; month: string | null; color: string }[];
   fonts: { code: string; name: string }[];
   shapes: string[]; types: string[];
-  render_templates: { style_code: string; name: string; stone_shape: string | null; multi_stone: boolean }[];
+  render_templates: { style_code: string; name: string; type: string; stone_shape: string | null; multi_stone: boolean }[];
 }
 interface Issue { field: string; message: string }
 
@@ -61,6 +65,8 @@ const DesignEditorPage = () => {
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
   const [saving, setSaving] = useState(false);
   const [slugTouched, setSlugTouched] = useState(!isNew);
+  /** Choice attribute fields whose text can't be parsed yet (saving is blocked until fixed). */
+  const [badAttributes, setBadAttributes] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     (async () => {
@@ -94,6 +100,10 @@ const DesignEditorPage = () => {
 
   const save = async (nextStatus = status) => {
     if (!def) return;
+    if (badAttributes.size) {
+      setMessage({ ok: false, text: "Fix the option attributes marked in red before saving." });
+      return;
+    }
     setSaving(true);
     setMessage(null);
     setIssues([]);
@@ -192,13 +202,13 @@ const DesignEditorPage = () => {
               <Field label="Sale % shown (optional)" hint="Shows a crossed-out higher price. 0 = no sale." issues={issueFor("salePercent")}>
                 <Input type="number" min={0} max={90} value={def.salePercent ?? 0} onChange={(e) => set({ salePercent: num(e.target.value) })} />
               </Field>
-              <Field label="Render artwork" hint="Until this design has its own 3D renders, borrow the artwork of a similar design." issues={issueFor("renderTemplate")}>
+              <Field label="Render artwork" hint={`Until this design has its own renders, borrow the artwork of a similar ${def.type}. Only ${def.type} artwork is listed.`} issues={issueFor("renderTemplate")}>
                 <Select value={def.renderTemplate || def.styleCode} onValueChange={(v) => set({ renderTemplate: v === def.styleCode ? undefined : v })}>
                   <Select.Trigger><Select.Value /></Select.Trigger>
                   <Select.Content>
                     {!meta.render_templates.some((t) => t.style_code === def.styleCode) && <Select.Item value={def.styleCode}>Own renders ({def.styleCode})</Select.Item>}
-                    {meta.render_templates.map((t) => (
-                      <Select.Item key={t.style_code} value={t.style_code}>{t.style_code} · {t.name}{t.multi_stone ? " (3-9 stones)" : ""}</Select.Item>
+                    {meta.render_templates.filter((t) => t.type === def.type || t.style_code === (def.renderTemplate || def.styleCode)).map((t) => (
+                      <Select.Item key={t.style_code} value={t.style_code}>{t.style_code} · {t.name}{t.multi_stone ? " (3-9 stones)" : ""}{t.type !== def.type ? ` (${t.type} artwork - not allowed)` : ""}</Select.Item>
                     ))}
                   </Select.Content>
                 </Select>
@@ -280,10 +290,14 @@ const DesignEditorPage = () => {
           <Section title="Engraving" issues={issueFor("engravings", "fonts", "defaultFont")}>
             <div className="flex flex-col gap-2">
               {def.engravings.map((e) => (
-                <div key={e.key} className="grid grid-cols-[1fr_110px_120px_auto] items-end gap-3">
+                <div key={e.key} className="grid grid-cols-[1fr_110px_120px_110px_auto] items-end gap-3">
                   <Field label="Label"><Input value={e.label} placeholder="e.g. Left Name" onChange={(ev) => set({ engravings: def.engravings.map((x) => (x.key === e.key ? { ...x, label: ev.target.value } : x)) })} /></Field>
                   <Field label="Max letters"><Input type="number" value={e.maxChars} onChange={(ev) => set({ engravings: def.engravings.map((x) => (x.key === e.key ? { ...x, maxChars: num(ev.target.value) } : x)) })} /></Field>
                   <Field label="Extra Rs"><Input type="number" value={e.price} onChange={(ev) => set({ engravings: def.engravings.map((x) => (x.key === e.key ? { ...x, price: num(ev.target.value) } : x)) })} /></Field>
+                  <label className="flex h-8 items-center gap-2 text-sm" title="The piece cannot be made without this text (e.g. a name necklace)">
+                    <Checkbox checked={!!e.required} onCheckedChange={(c) => set({ engravings: def.engravings.map((x) => (x.key === e.key ? optionEdits.setRequired(x, !!c) : x)) })} />
+                    Required
+                  </label>
                   <Button variant="transparent" size="small" onClick={() => set({ engravings: def.engravings.filter((x) => x.key !== e.key) })}>Remove</Button>
                 </div>
               ))}
@@ -307,6 +321,15 @@ const DesignEditorPage = () => {
                 <Text size="xsmall" className="text-ui-fg-subtle">(radio = default font)</Text>
               </div>
             )}
+          </Section>
+
+          {/* Option groups */}
+          <Section title="Options" subtitle="Extra choices such as chain length or chain type. Shown to customers in this order." issues={issueFor("options")}>
+            <OptionGroupsEditor
+              groups={def.options ?? []}
+              onChange={(groups) => set({ options: groups.length ? groups : undefined })}
+              onAttributeValidity={(id, ok) => setBadAttributes((prev) => { const next = new Set(prev); if (ok) next.delete(id); else next.add(id); return next; })}
+            />
           </Section>
 
           {/* Size */}
@@ -367,6 +390,94 @@ const DesignEditorPage = () => {
 };
 
 const STORE_URL = "http://localhost:3000";
+
+/** Create, edit, reorder and remove option groups and their choices. Rules are checked on save (server). */
+function OptionGroupsEditor({ groups, onChange, onAttributeValidity }: {
+  groups: OptGroup[];
+  onChange: (groups: OptGroup[]) => void;
+  onAttributeValidity: (id: string, ok: boolean) => void;
+}) {
+  // All edits go through the shared, tested engine operations (optionEdits).
+  const edit = (next: OptGroup[]) => onChange(next);
+
+  return (
+    <div className="flex flex-col gap-4">
+      {groups.length === 0 && <Text size="small" className="text-ui-fg-subtle">No options - customers only choose metal, stones, engraving and packaging.</Text>}
+      {groups.map((g, i) => (
+        <div key={i} className="flex flex-col gap-3 rounded-md border border-ui-border-base p-4">
+          <div className="grid grid-cols-[110px_1fr_170px] items-end gap-3">
+            <Field label="Key (in URLs)" hint="e.g. cl - keep it once published">
+              <Input value={g.key} onChange={(e) => edit(optionEdits.setKey(groups, i, e.target.value))} />
+            </Field>
+            <Field label="Label shown to customers"><Input value={g.label} placeholder="e.g. Chain length" onChange={(e) => edit(optionEdits.updateGroup(groups, i, { label: e.target.value }))} /></Field>
+            <Field label="Default choice">
+              <Select value={g.defaultChoice ?? g.choices[0]?.code ?? ""} onValueChange={(v) => edit(optionEdits.setDefault(groups, i, v))}>
+                <Select.Trigger><Select.Value placeholder="First choice" /></Select.Trigger>
+                <Select.Content>{g.choices.filter((c) => c.code).map((c) => <Select.Item key={c.code} value={c.code}>{c.name || c.code}</Select.Item>)}</Select.Content>
+              </Select>
+            </Field>
+          </div>
+          <div className="flex flex-wrap items-center gap-4">
+            <label className="flex items-center gap-2 text-sm">
+              <Checkbox checked={!!g.visual} onCheckedChange={(c) => edit(optionEdits.setVisual(groups, i, !!c))} />
+              Changes the product image
+            </label>
+            <div className="ml-auto flex gap-1">
+              <Button variant="transparent" size="small" disabled={i === 0} onClick={() => edit(optionEdits.moveGroup(groups, i, -1))} aria-label="Move option group up">↑</Button>
+              <Button variant="transparent" size="small" disabled={i === groups.length - 1} onClick={() => edit(optionEdits.moveGroup(groups, i, 1))} aria-label="Move option group down">↓</Button>
+              <Button variant="transparent" size="small" onClick={() => edit(optionEdits.removeGroup(groups, i))}>Remove group</Button>
+            </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            {g.choices.map((c, k) => (
+              <div key={k} className="grid grid-cols-[100px_1fr_100px_1.3fr_auto] items-start gap-3">
+                <Field label="Code"><Input value={c.code} placeholder="e.g. 18" onChange={(e) => edit(optionEdits.updateChoice(groups, i, k, { code: e.target.value }))} /></Field>
+                <Field label="Name"><Input value={c.name} placeholder="e.g. 18 inch" onChange={(e) => edit(optionEdits.updateChoice(groups, i, k, { name: e.target.value }))} /></Field>
+                <Field label="Extra Rs"><Input type="number" min={0} value={c.price} onChange={(e) => edit(optionEdits.updateChoice(groups, i, k, { price: num(e.target.value) }))} /></Field>
+                <AttributesInput id={`${i}:${k}`} value={c.attributes} onValidity={onAttributeValidity} onChange={(attributes) => edit(optionEdits.updateChoice(groups, i, k, { attributes }))} />
+                <Button variant="transparent" size="small" className="mt-6" disabled={g.choices.length <= 1} onClick={() => edit(optionEdits.removeChoice(groups, i, k))}>Remove</Button>
+              </div>
+            ))}
+            <Button variant="secondary" size="small" className="self-start" onClick={() => edit(optionEdits.addChoice(groups, i))}>Add choice</Button>
+          </div>
+        </div>
+      ))}
+      <Button variant="secondary" size="small" className="self-start" onClick={() => edit(optionEdits.addGroup(groups))}>
+        Add option group
+      </Button>
+    </div>
+  );
+}
+
+/** Optional facts for other systems, typed from text: "lengthIn=18, plated=true". */
+function AttributesInput({ id, value, onChange, onValidity }: {
+  id: string;
+  value?: OptionAttributes;
+  onChange: (attributes: OptionAttributes | undefined) => void;
+  onValidity: (id: string, ok: boolean) => void;
+}) {
+  const [text, setText] = useState(() => formatOptionAttributes(value));
+  const [error, setError] = useState<string | undefined>();
+  useEffect(() => () => onValidity(id, true), [id]); // eslint-disable-line react-hooks/exhaustive-deps
+  return (
+    <Field label="Attributes (optional)" hint={error ? undefined : "e.g. lengthIn=18"}>
+      <Input
+        value={text}
+        placeholder="name=value, ..."
+        aria-invalid={!!error}
+        onChange={(e) => {
+          setText(e.target.value);
+          const parsed = parseOptionAttributes(e.target.value);
+          setError(parsed.error);
+          onValidity(id, !parsed.error);
+          if (!parsed.error) onChange(parsed.attributes);
+        }}
+      />
+      {error && <Text size="xsmall" className="text-ui-fg-error">{error}</Text>}
+    </Field>
+  );
+}
+
 
 function Section({ title, subtitle, issues, children }: { title: string; subtitle?: string; issues?: Issue[]; children: React.ReactNode }) {
   return (

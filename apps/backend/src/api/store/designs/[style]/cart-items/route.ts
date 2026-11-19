@@ -4,6 +4,7 @@ import { addToCartWorkflow, deleteLineItemsWorkflow } from "@medusajs/medusa/cor
 import {
   configToQuery,
   describeDesign,
+  engravingLines,
   normalizeConfig,
   priceDesign,
   validateForCart,
@@ -72,6 +73,7 @@ export async function POST(req: MedusaRequest<Body>, res: MedusaResponse) {
             style_code: product.styleCode,
             design: config,
             design_summary: describeDesign(product, config),
+            engraving_lines: engravingLines(product, config),
             price_lines: price.lines,
             compare_at: price.compareAt ?? null,
             image_url: `${IMAGE_URL}/img/${product.styleCode}/${product.slug}.webp?${imageQuery}&w=800`,

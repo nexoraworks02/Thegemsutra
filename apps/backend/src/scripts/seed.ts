@@ -188,7 +188,7 @@ export default async function seedStore({ container }: ExecArgs) {
   // creates its Medusa product. Afterwards they are edited in the admin "Designs" page.
   for (const p of PRODUCTS) {
     if (!(await getDesign(container, p.styleCode))) {
-      await saveDesign(container, { definition: p, status: "published" }, { create: true });
+      await saveDesign(container, { definition: p, status: "published" }, { create: true, artworkCheck: "if-reachable" });
     }
   }
 

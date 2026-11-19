@@ -14,6 +14,6 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
     // Designs with render artwork that new designs can borrow until they get their own 3D renders.
     render_templates: designs
       .filter((d) => !d.definition.renderTemplate || d.definition.renderTemplate === d.style_code)
-      .map((d) => ({ style_code: d.style_code, name: d.definition.name, stone_shape: d.definition.stoneCount?.slot.shape ?? d.definition.stoneSlots[0]?.shape ?? null, multi_stone: !!d.definition.stoneCount })),
+      .map((d) => ({ style_code: d.style_code, name: d.definition.name, type: d.definition.type, stone_shape: d.definition.stoneCount?.slot.shape ?? d.definition.stoneSlots[0]?.shape ?? null, multi_stone: !!d.definition.stoneCount })),
   });
 }

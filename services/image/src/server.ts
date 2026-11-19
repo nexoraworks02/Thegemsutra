@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { configFromQuery, configToQuery } from "@jemsutra/design-engine";
+import { artworkKindFromViews, configFromQuery, configToQuery } from "@jemsutra/design-engine";
 import { getDesign } from "./designs";
 import { defaultDrop } from "./necklace";
 import { RenderError, closestWidth, loadManifest, renderDesign, renderStone } from "./render";
@@ -87,6 +87,23 @@ app.get("/tryon-meta/:style", async (c) => {
     pendant: v.nameplate!.pendant ? { defaultDrop: defaultDrop(v.nameplate!), ...v.nameplate!.pendant } : null,
     approximate: true,
   });
+});
+
+/**
+ * GET /internal/artwork/:code - does render artwork exist for this style code, and
+ * is it ring or necklace artwork? For the backend only (x-internal-key, the same
+ * INTERNAL_API_KEY used for /internal/designs): it stops a design being saved with
+ * artwork of another product type, or published without artwork. Reads the
+ * manifest only; returns no paths or file contents.
+ */
+app.get("/internal/artwork/:code", async (c) => {
+  const key = process.env.INTERNAL_API_KEY;
+  if (!key || c.req.header("x-internal-key") !== key) return c.json({ message: "Unauthorized" }, 401);
+  const code = c.req.param("code");
+  if (!/^[A-Z]{2,4}\d{3,5}$/.test(code)) return c.json({ message: "Invalid style code" }, 400);
+  const manifest = await loadManifest(code);
+  if (!manifest) return c.json({ code, exists: false, kind: null });
+  return c.json({ code, exists: true, kind: artworkKindFromViews(manifest.views) });
 });
 
 app.get("/stones/:shape/:file", async (c) => {

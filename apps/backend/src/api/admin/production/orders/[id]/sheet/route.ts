@@ -1,5 +1,5 @@
 import type { AuthenticatedMedusaRequest, MedusaResponse } from "@medusajs/framework/http";
-import { STAGE_INFO } from "@jemsutra/design-engine";
+import { STAGE_INFO, sheetEngravingLines } from "@jemsutra/design-engine";
 import { loadOrder, productionOf } from "../../../../../../lib/production";
 
 const esc = (s: unknown) =>
@@ -33,9 +33,10 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
 
   const items = (order.items ?? [])
     .map((item, idx) => {
-      const meta = (item.metadata ?? {}) as { image_url?: string; design_summary?: [string, string][]; design?: { engravings?: Record<string, string> } };
+      const meta = (item.metadata ?? {}) as { image_url?: string; design_summary?: [string, string][]; engraving_lines?: unknown };
       const summary = meta.design_summary ?? [];
-      const engravings = summary.filter(([k]) => /name|engraving/i.test(k));
+      // Exact engraving text (structured on new orders; label rule only for older orders).
+      const engravings = sheetEngravingLines(meta);
       const font = summary.find(([k]) => k === "Font")?.[1];
       return `
       <section class="item">
@@ -48,8 +49,7 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
         ${engravings.length ? `
         <div class="engrave">
           <h3>Engraving - check every letter${font ? ` · font: ${esc(font)}` : ""}</h3>
-          ${engravings.map(([k, v]) => {
-            const text = v.replace(/^"|"$/g, "");
+          ${engravings.map(([k, text]) => {
             return `<p><span class="label">${esc(k)}</span><span class="text">${esc(text)}</span>
               <span class="letters">${[...text].map((ch) => `<b>${ch === " " ? "&#9251;" : esc(ch)}</b>`).join("")}</span>
               <span class="count">${text.length} characters</span></p>`;

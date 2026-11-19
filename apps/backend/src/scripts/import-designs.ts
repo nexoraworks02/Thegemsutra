@@ -16,7 +16,7 @@ export default async function importDesigns({ container }: ExecArgs) {
       logger.info(`${p.styleCode} already imported`);
       continue;
     }
-    const saved = await saveDesign(container, { definition: p, status: "published" }, { create: true });
+    const saved = await saveDesign(container, { definition: p, status: "published" }, { create: true, artworkCheck: "if-reachable" });
     logger.info(`Imported ${p.styleCode} (${p.name}) -> product ${saved.product_id}`);
   }
 }

@@ -11,6 +11,7 @@ import {
   STONE_BY_CODE,
   configFromQuery,
   configToQuery,
+  formatChoicePrice,
   formatMoney,
   normalizeConfig,
   priceDesign,
@@ -18,6 +19,7 @@ import {
   sizeOptions,
   validateForCart,
   type DesignConfig,
+  type OptionGroupDef,
   type ProductDef,
   type StoneSlotDef,
 } from "@jemsutra/design-engine";
@@ -48,7 +50,8 @@ export function Designer({ product }: { product: ProductDef }) {
 
   // No design in the URL? Start from what the shopper chose on other products.
   useEffect(() => {
-    if (!DESIGN_KEYS.some((k) => params.has(k))) {
+    // A link that sets any design value (incl. this product's option groups) is kept as-is.
+    if (![...DESIGN_KEYS, ...(product.options ?? []).map((g) => g.key)].some((k) => params.has(k))) {
       setConfig(withPrefs(product, readPrefs()));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only on first load
@@ -56,7 +59,15 @@ export function Designer({ product }: { product: ProductDef }) {
 
   const update = useCallback(
     (patch: Partial<DesignConfig>) => {
-      setConfig((prev) => normalizeConfig(product, { ...prev, ...patch, stones: { ...prev.stones, ...patch.stones }, engravings: { ...prev.engravings, ...patch.engravings } }));
+      setConfig((prev) =>
+        normalizeConfig(product, {
+          ...prev,
+          ...patch,
+          stones: { ...prev.stones, ...patch.stones },
+          engravings: { ...prev.engravings, ...patch.engravings },
+          options: { ...prev.options, ...patch.options },
+        }),
+      );
       if (patch.size != null) setSizeError(false);
       if (patch.engravings) setEngravingErrors({});
       setAdded(false);
@@ -228,6 +239,17 @@ export function Designer({ product }: { product: ProductDef }) {
             </Step>
           )}
 
+          {product.options?.map((group) => (
+            <OptionGroupStep
+              key={group.key}
+              group={group}
+              value={config.options?.[group.key]}
+              open={open}
+              setOpen={setOpen}
+              onChange={(code) => update({ options: { [group.key]: code } })}
+            />
+          ))}
+
           {product.size && (
             <Step id="size" title="Ring size" summary={config.size != null ? `Size ${config.size}` : "Select your size"} open={open} setOpen={setOpen} error={sizeError}>
               <select
@@ -374,6 +396,50 @@ function Step(props: {
       </button>
       {isOpen && <div className="pb-5">{props.children}</div>}
     </section>
+  );
+}
+
+/**
+ * Generic control for one option group (chain length, chain type, ...), driven
+ * entirely by the product definition. Few choices: selectable tiles showing the
+ * extra price; many choices: a compact dropdown. The engine normalises the value
+ * and prices it - nothing here computes prices.
+ */
+const MAX_TILES = 8;
+
+function OptionGroupStep({ group, value, open, setOpen, onChange }: {
+  group: OptionGroupDef;
+  value: string | undefined;
+  open: string;
+  setOpen: (id: string) => void;
+  onChange: (code: string) => void;
+}) {
+  const current = group.choices.find((c) => c.code === value) ?? group.choices[0];
+  const id = `option-${group.key}`;
+  const summary = current ? `${current.name}${current.price > 0 ? ` · ${formatChoicePrice(current.price)}` : ""}` : "";
+  return (
+    <Step id={id} title={group.label} summary={summary} open={open} setOpen={setOpen}>
+      {group.choices.length > MAX_TILES ? (
+        <select value={current?.code} onChange={(e) => onChange(e.target.value)} aria-label={group.label} className="field px-3 py-2.5 text-[15px]">
+          {group.choices.map((c) => (
+            <option key={c.code} value={c.code}>{c.name} ({formatChoicePrice(c.price)})</option>
+          ))}
+        </select>
+      ) : (
+        <div role="group" aria-label={group.label} className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {group.choices.map((c) => {
+            const active = c.code === current?.code;
+            return (
+              <button key={c.code} type="button" onClick={() => onChange(c.code)} aria-pressed={active}
+                className={`text-left p-3 rounded-sm option ${active ? "option-active" : ""}`}>
+                <span className="block text-sm font-medium">{c.name}</span>
+                <span className="block mt-0.5 text-xs text-muted">{formatChoicePrice(c.price)}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </Step>
   );
 }
 

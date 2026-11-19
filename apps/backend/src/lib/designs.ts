@@ -2,10 +2,13 @@ import type { MedusaContainer } from "@medusajs/framework/types";
 import { ContainerRegistrationKeys, Modules, ProductStatus } from "@medusajs/framework/utils";
 import { createProductsWorkflow, updateProductsWorkflow } from "@medusajs/medusa/core-flows";
 import {
+  artworkCompatibilityIssues,
+  artworkInfoFromResponse,
   configToQuery,
   defaultConfig,
   fromPrice,
   validateProductDef,
+  type ArtworkInfo,
   type ProductDef,
   type ValidationIssue,
 } from "@jemsutra/design-engine";
@@ -60,6 +63,19 @@ export async function getDesign(
   return (row as unknown as DesignRecord) ?? null;
 }
 
+/** Ask the image service which artwork a style code has. Null when it can't be checked. */
+async function artworkInfo(code: string): Promise<ArtworkInfo | null> {
+  try {
+    const r = await fetch(`${IMAGE_URL}/internal/artwork/${encodeURIComponent(code)}`, {
+      headers: { "x-internal-key": process.env.INTERNAL_API_KEY ?? "" },
+      signal: AbortSignal.timeout(4000),
+    });
+    return artworkInfoFromResponse(code, r.status, await r.json().catch(() => null));
+  } catch {
+    return null;
+  }
+}
+
 /** Image URL of a design's default look (used for product thumbnails). */
 export function defaultImageUrl(def: ProductDef, width = 800): string {
   const q = configToQuery(def, defaultConfig(def), { include: "visual" }).toString();
@@ -87,7 +103,16 @@ function clean(def: ProductDef): ProductDef {
 export async function saveDesign(
   container: MedusaContainer,
   input: { definition: ProductDef; status: DesignStatus },
-  opts: { create: boolean },
+  opts: {
+    create: boolean;
+    /**
+     * "strict" (default, all admin saves): the artwork check always applies.
+     * "if-reachable": only for the trusted seed/import scripts of the code catalog,
+     * so a fresh database can be set up before the image service is started; the
+     * check still applies whenever the image service answers.
+     */
+    artworkCheck?: "strict" | "if-reachable";
+  },
 ): Promise<DesignRecord> {
   const def = clean(input.definition);
   const issues = validateProductDef(def);
@@ -98,6 +123,13 @@ export async function saveDesign(
   if (others.some((d) => d.definition.slug === def.slug)) issues.push({ field: "slug", message: `URL name "${def.slug}" is already used by another design.` });
   if (def.renderTemplate && def.renderTemplate !== def.styleCode && ![def.styleCode, ...others.map((o) => o.style_code)].includes(def.renderTemplate)) {
     issues.push({ field: "renderTemplate", message: `Render artwork ${def.renderTemplate} is not an existing design.` });
+  }
+  // Artwork must exist to publish, and must match the product type (ring artwork can't be used for a necklace).
+  if (!issues.some((i) => i.field === "renderTemplate" || i.field === "styleCode" || i.field === "type")) {
+    const artwork = await artworkInfo(def.renderTemplate || def.styleCode);
+    if (artwork || opts.artworkCheck !== "if-reachable") {
+      issues.push(...artworkCompatibilityIssues(def, artwork, { publishing: input.status === "published" }));
+    }
   }
   if (issues.length) throw new DesignValidationError(issues);
 
