@@ -26,7 +26,9 @@ export function Footer() {
           </ul>
         </div>
       </div>
-      <p className="mx-auto max-w-7xl border-t border-line pt-6 text-center text-xs text-muted pb-8">© THEJEMSUTRA · All rights reserved</p>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <p className="border-t border-line pt-6 pb-8 text-center text-xs text-muted">© THEJEMSUTRA · All rights reserved</p>
+      </div>
     </footer>
   );
 }

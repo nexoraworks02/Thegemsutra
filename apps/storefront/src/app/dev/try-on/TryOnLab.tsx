@@ -269,7 +269,7 @@ export function TryOnLab() {
           </label>
         )}
         {status.kind !== "idle" && (
-          <p role="status" className={`mt-3 text-sm ${status.kind === "error" ? "text-sale" : status.kind === "warn" ? "text-gold-dark" : "text-muted"}`}>
+          <p role="status" className={`mt-3 text-sm ${status.kind === "error" ? "text-sale" : status.kind === "warn" ? "text-rose-deep" : "text-muted"}`}>
             {status.text}
           </p>
         )}
@@ -348,7 +348,7 @@ export function TryOnLab() {
             <p className="text-xs text-muted">
               Size and position are approximate: a photo has no exact real-world scale, so fine-tune by hand.
             </p>
-            <button type="button" onClick={download} className="w-full bg-ink text-ivory py-3 text-[12px] tracking-[0.16em] uppercase hover:bg-gold-dark">
+            <button type="button" onClick={download} className="btn-primary w-full py-3 text-[12px]">
               Download photo
             </button>
           </section>
