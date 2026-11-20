@@ -9,7 +9,8 @@
     "start": "tsx --env-file-if-exists=.env src/server.ts",
     "layers": "tsx scripts/generate-demo-layers.ts",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "assets:check": "tsx scripts/check-necklace-assets.ts"
   },
   "dependencies": {
     "@fontsource/great-vibes": "^5.1.0",
