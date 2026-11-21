@@ -10,7 +10,8 @@
     "layers": "tsx scripts/generate-demo-layers.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "assets:check": "tsx scripts/check-necklace-assets.ts"
+    "assets:check": "tsx scripts/check-necklace-assets.ts",
+    "catalog:import": "tsx scripts/catalog-import.ts"
   },
   "dependencies": {
     "@fontsource/great-vibes": "^5.1.0",

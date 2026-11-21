@@ -3,6 +3,7 @@ import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { artworkKindFromViews, configFromQuery, configToQuery } from "@jemsutra/design-engine";
+import { catalogRoutes, demoCatalogEnabled } from "./catalog/routes";
 import { getDesign } from "./designs";
 import { defaultDrop } from "./necklace";
 import { RenderError, closestWidth, loadManifest, renderDesign, renderStone } from "./render";
@@ -113,5 +114,12 @@ app.get("/stones/:shape/:file", async (c) => {
   return c.body(new Uint8Array(buf), 200, { "Content-Type": "image/webp", "Cache-Control": IMMUTABLE });
 });
 
+// DEMO catalog (development only): off unless DEMO_CATALOG_DIR is set; see src/catalog/routes.ts.
+const demoCatalogDir = demoCatalogEnabled();
+app.route("/catalog", catalogRoutes(demoCatalogDir));
+
 const port = Number(process.env.PORT ?? 4100);
-serve({ fetch: app.fetch, port }, () => console.log(`Image service on http://localhost:${port}`));
+serve({ fetch: app.fetch, port }, () => {
+  console.log(`Image service on http://localhost:${port}`);
+  if (demoCatalogDir) console.log(`DEMO catalog enabled from ${demoCatalogDir} (development only - not for production)`);
+});

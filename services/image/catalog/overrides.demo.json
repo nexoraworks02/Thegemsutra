@@ -1,0 +1,49 @@
+{
+  "schema": "thegemsutra.catalog-overrides",
+  "schemaVersion": 1,
+  "dataset": "demo-2026-11",
+  "exclude": [
+    { "file": "Jewelry_Sets_Concepts_and_Lifestyle/Eight premium jewellery designs with smk.jpg", "reason": "Mood board of several designs; shows third-party smk branding" },
+    { "file": "Jewelry_Sets_Concepts_and_Lifestyle/SMK Luxury Jewellery Collection.jpg", "reason": "Mood board of several designs; shows third-party smk branding" },
+    { "file": "Jewelry_Sets_Concepts_and_Lifestyle/Six smk-inspired jewellery pattern concepts.jpg", "reason": "Mood board of several designs; shows third-party smk branding" },
+    { "file": "Jewelry_Sets_Concepts_and_Lifestyle/Flowing Signature Jewelry Design Board.jpg", "reason": "Design board of several pieces; not a single product" },
+    { "file": "Necklaces_and_Pendants/Ten couture gemstone necklace designs.jpg", "reason": "Mood board of ten designs; not a single product" }
+  ],
+  "lifestyle": [
+    "Jewelry_Sets_Concepts_and_Lifestyle/Elegant gold jewelry close-up portrait.jpg",
+    "Jewelry_Sets_Concepts_and_Lifestyle/Elegant gold jewelry portrait.png",
+    "Jewelry_Sets_Concepts_and_Lifestyle/Elegant gold jewelry sets in focus.png",
+    "Jewelry_Sets_Concepts_and_Lifestyle/Elegant golden jewelry against neutral background.png",
+    "Jewelry_Sets_Concepts_and_Lifestyle/Golden elegance against a yellow backdrop.png",
+    "Jewelry_Sets_Concepts_and_Lifestyle/Luxurious gold jewelry on velvet.jpg"
+  ],
+  "products": [
+    { "id": "DEMO-RNG-001", "category": "rings", "title": "Aqua Leaf Halo Ring", "tags": ["aqua", "rectangular", "halo", "leaf"], "price": 11111, "images": ["Rings/Aqua Radiance Leaf Halo Ring.jpg"] },
+    { "id": "DEMO-RNG-002", "category": "rings", "title": "Blue Marquise Cluster Ring", "tags": ["blue", "marquise", "halo"], "price": 22222, "images": ["Rings/Asymmetric Marquise Sapphire Ring.jpg"] },
+    { "id": "DEMO-RNG-003", "category": "rings", "title": "White Heart Halo Ring", "tags": ["white", "heart", "halo"], "price": 33333, "images": ["Rings/Golden heart halo diamond ring.jpg"] },
+    { "id": "DEMO-RNG-004", "category": "rings", "title": "Lavender Cushion Ring", "tags": ["purple", "cushion", "solitaire"], "price": 44444, "images": ["Rings/Lavender Amethyst Gold Ring with Diamond Shoulders.jpg"] },
+    { "id": "DEMO-RNG-005", "category": "rings", "title": "Red Pear Split-Shank Ring", "tags": ["red", "pear", "halo", "split-shank"], "price": 55555, "images": ["Rings/Pear Ruby Split-Shank Halo Ring.jpg"] },
+    { "id": "DEMO-RNG-006", "category": "rings", "title": "Champagne Rectangular Halo Ring", "tags": ["champagne", "rectangular", "halo", "three-stone"], "price": 66666, "images": ["Rings/Radiant Champagne Diamond Gold Ring.jpg"] },
+    { "id": "DEMO-RNG-007", "category": "rings", "title": "Twisted Band Cushion Ring", "tags": ["white", "cushion", "twisted", "solitaire"], "price": 77777, "images": ["Rings/Twisted Double-Band Cushion Gold Ring.jpg"] },
+    { "id": "DEMO-RNG-008", "category": "rings", "title": "Red Heart Halo Ring", "tags": ["red", "heart", "halo", "split-shank"], "price": 88888, "images": ["Rings/Yellow-Gold Heart Ruby Halo Ring.jpg"] },
+
+    { "id": "DEMO-EAR-001", "category": "earrings", "title": "Triple Arc Studs", "tags": ["circle", "stud", "minimal"], "price": 9999, "images": ["Earrings/Airy triple-arc gold earrings.jpg"] },
+    { "id": "DEMO-EAR-002", "category": "earrings", "title": "Braided C-Hoops", "tags": ["hoop", "twisted"], "price": 11111, "images": ["Earrings/Braided Gold C-Hoop Earrings.jpg"] },
+    { "id": "DEMO-EAR-003", "category": "earrings", "title": "Double Teardrop Earrings", "tags": ["teardrop", "drop", "minimal"], "price": 8888, "images": ["Earrings/Double-teardrop gold earrings.jpg"] },
+    { "id": "DEMO-EAR-004", "category": "earrings", "title": "Double Helix Spiral Studs", "tags": ["spiral", "stud"], "price": 7777, "images": ["Earrings/Golden Double-Helix Spiral Earrings.jpg"] },
+    { "id": "DEMO-EAR-005", "category": "earrings", "title": "Fan Spiral Earrings", "tags": ["spiral", "statement"], "price": 9999, "images": ["Earrings/Polished gold fan spiral earrings.jpg"] },
+    { "id": "DEMO-EAR-006", "category": "earrings", "title": "Twisted Spiral Huggies", "tags": ["hoop", "twisted", "spiral", "minimal"], "price": 6666, "images": ["Earrings/Twisted Gold Spiral Hoop Earrings.jpg"] },
+    { "id": "DEMO-EAR-007", "category": "earrings", "title": "Leaf-Ridged Twisted Hoops", "tags": ["hoop", "twisted", "leaf"], "price": 11111, "images": ["Jewelry_Sets_Concepts_and_Lifestyle/Leaf-ridged twisted gold hoops.jpg"] },
+    { "id": "DEMO-EAR-008", "category": "earrings", "title": "Crescent Spiral-Tip Hoops", "tags": ["crescent", "hoop", "spiral"], "price": 8888, "images": ["Jewelry_Sets_Concepts_and_Lifestyle/Crescent Gold Hoops with Spiral Tips.jpg"] },
+
+    { "id": "DEMO-NCK-001", "category": "necklaces", "title": "Purple Kite Pendant Necklace", "tags": ["purple", "geometric", "pendant", "statement"], "price": 22222, "images": ["Necklaces_and_Pendants/Architectural amethyst gold statement necklace.jpg"] },
+    { "id": "DEMO-NCK-002", "category": "necklaces", "title": "Purple Key Pendant Necklace", "tags": ["purple", "pendant", "vintage"], "price": 11111, "images": ["Necklaces_and_Pendants/Purple Gemstone Key Necklace.jpg"] },
+    { "id": "DEMO-NCK-003", "category": "necklaces", "title": "Crescent Moon and Star Necklace", "tags": ["purple", "crescent", "pendant", "minimal"], "price": 9999, "images": ["Necklaces_and_Pendants/Golden crescent moon star necklace.jpg"] },
+    { "id": "DEMO-NCK-004", "category": "necklaces", "title": "Purple Accent Bar Necklace", "tags": ["purple", "bar", "minimal"], "price": 8888, "images": ["Necklaces_and_Pendants/Minimal Gold Bar Necklace with Purple Stones.jpg"] },
+    { "id": "DEMO-NCK-005", "category": "necklaces", "title": "Purple Oval Collar Necklace", "tags": ["purple", "oval", "collar", "statement"], "price": 33333, "images": ["Necklaces_and_Pendants/Luxury gold collar with purple cabochons.jpg"] },
+    { "id": "DEMO-NCK-006", "category": "necklaces", "title": "Lilac Floral Station Necklace", "tags": ["purple", "teardrop", "floral", "station", "pendant"], "price": 11111, "images": ["Earrings/Gold Floral Necklace with Teardrop Crystal.jpg"] },
+
+    { "id": "DEMO-SET-001", "category": "sets", "title": "Filigree Bridal Set with Drops", "tags": ["white", "bridal", "statement", "vintage"], "price": 99999, "images": ["Jewelry_Sets_Concepts_and_Lifestyle/Intricate gold jewelry set with pearls.jpg"], "reviewNotes": ["Replace: checkerboard pattern baked into the background of the supplied JPEG"] },
+    { "id": "DEMO-SET-002", "category": "sets", "title": "Ornate Bridal Collar Set", "tags": ["bridal", "collar", "statement"], "price": 88888, "images": ["Jewelry_Sets_Concepts_and_Lifestyle/Ornate gold jewelry set on transparent background.jpg"], "reviewNotes": ["Replace: checkerboard pattern baked into the background of the supplied JPEG"] }
+  ]
+}
