@@ -88,11 +88,52 @@ To start again from empty, delete `.pgdata-m2test` and run `db`, `mark`, `migrat
 
 ---
 
-## Security finding for M2.2: client-controlled cart lines (NOT fixed in M2.1)
+## M2.2 cart & pricing security (fixed and tested in the test environment)
 
-**Status:** identified by code inspection only. Not exploited, not tested against the
-development database. Cart behaviour is unchanged in M2.1. **Must be fixed and verified before
-any public deployment.**
+**Status:** 18 bypasses confirmed against the TEST database (before), all refused after the
+fix (28/28 security tests pass; 13/13 direct workflow hook checks pass). Never tested against
+the development database.
+
+**How it is enforced** (`apps/backend/src/lib/cart-security.ts` is the single policy):
+- Request guards (`src/api/middlewares.ts`) on `POST /store/carts`, `POST /store/carts/:id`,
+  `POST /store/carts/:id/line-items`, `POST` + `DELETE /store/carts/:id/line-items/:line_id`.
+- Workflow hooks (`src/workflows/hooks/cart-security.ts`) on addToCart, updateLineItemInCart,
+  createCart, updateCart and completeCart - they apply whatever starts the workflow.
+- Checkout: inside Medusa's cart lock, every personalised line is rebuilt from its stored design
+  and the current published definition; variant, quantity (1), price and all trusted metadata
+  must match exactly or no order is created.
+- Designer route: `replace_line_id` must be a personalised line of the same cart; each line gets
+  a server `line_ref` so identical designs stay separate lines.
+- Standard products: normal variants and quantities; client line metadata only from an explicit
+  allowlist (empty); client cart metadata refused (it is copied onto the order).
+
+Commands: `npm run m2test -- fixtures` (once), `npm run m2test -- security`,
+`npm run m2test -- hooks`.
+
+**Test suites:** `security` = 28 HTTP integration tests against the test backend and test
+database (routes + middleware + hooks + designer route + checkout, including direct
+test-DB corruption to exercise the checkout check). `hooks` = 13 checks that call Medusa's
+workflows directly with no HTTP route, proving the workflow hooks on their own. They overlap
+by design for add/update/create/update-cart (two layers); only `security` covers checkout,
+cross-cart deletion, `replace_line_id` and concurrency.
+
+**Known limitations (not production-proven):**
+- Checkout serialisation relies on Medusa's cart lock. The default locking provider is
+  **in-process memory**: it is only effective while ONE backend process serves the store. With
+  several backend instances or workers, configure a shared locking provider (e.g. Redis) and
+  re-run the concurrency test before relying on it. Not tested with multiple instances.
+- Every completion path found runs `completeCartWorkflow` (store `/complete` route and the
+  payment-webhook `completeCartAfterPaymentStep`), so the checkout check applies to both; the
+  webhook path is covered by code inspection only (no payment provider with webhooks yet).
+- Promotions, customer transfer and shipping-method routes don't write line data and were not
+  reviewed for pricing abuse. Admin routes (order edits, draft orders) are trusted and outside
+  this policy.
+- A design whose options or prices change after it was added to a cart makes that line stale:
+  checkout refuses it (by design); the storefront currently shows a generic error.
+- The 14 legacy per-metal variants still exist in the development database; they are now
+  refused by every cart path but are not removed.
+
+### Original finding (for the record)
 
 **Assumption that breaks:** personalised lines are only ever created by
 `POST /store/designs/:style/cart-items`, which re-prices on the server and writes the trusted

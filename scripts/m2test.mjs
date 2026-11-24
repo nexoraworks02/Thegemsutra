@@ -9,6 +9,9 @@
  *   npm run m2test -- migrate      Medusa migrations on the TEST database only
  *   npm run m2test -- seed         minimal seed (region, delivery, code-catalog designs) on the TEST database only
  *   npm run m2test -- designs      copy the JS0001-JS0003 design definitions (JSON only) from the dev database
+ *   npm run m2test -- fixtures     security-test fixtures (standard item, legacy-style variant) - test DB only
+ *   npm run m2test -- security     cart security test suite against the test backend (127.0.0.1:9001) only
+ *   npm run m2test -- hooks        workflow-level security hooks, called directly (test DB only)
  *   npm run m2test -- backend      test backend on 127.0.0.1:9001
  *   npm run m2test -- storefront   test storefront on 127.0.0.1:3001
  *   npm run m2test -- verify       read-only comparison of the original and the test database
@@ -344,6 +347,28 @@ const commands = {
       c.expect(!!t && t.status === r.status && JSON.stringify(canon(t.definition)) === JSON.stringify(canon(r.definition)), `${r.definition.styleCode} identical (${r.status})`);
     }
     c.orExit();
+  },
+
+  /** Security-test fixtures (standard item + legacy-style personalised variant), test database only. */
+  async fixtures() {
+    const { test } = await guardedDatabase();
+    process.exit(await run("npx", ["medusa", "exec", "./src/scripts/m2test-fixtures.ts"], BACKEND, childEnv(test)));
+  },
+
+  /** Workflow-level hook checks (Medusa workflows called directly, no HTTP), test database only. */
+  async hooks() {
+    const { test } = await guardedDatabase();
+    process.exit(await run("npx", ["medusa", "exec", "./src/scripts/m2test-hook-check.ts"], BACKEND, childEnv(test)));
+  },
+
+  /** Cart security test suite against the TEST backend (127.0.0.1:9001) only. */
+  async security() {
+    const s = await guardedDatabase();
+    const c = storefrontChecks(s);
+    c.orExit();
+    const env = { ...process.env, M2TEST_DATABASE_URL: s.test.DATABASE_URL, M2TEST_PUBLISHABLE_KEY: s.sfTest.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY, M2TEST_ORIGINAL_KEY: s.sfMain.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY ?? "" };
+    const args = ["--test", "--test-concurrency=1", "--test-reporter=spec", path.join(ROOT, "scripts", "m2test-cart-security.test.mjs")];
+    process.exit(await run("node", args, ROOT, env));
   },
 
   async backend() {

@@ -1,18 +1,9 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils";
 import { addToCartWorkflow, deleteLineItemsWorkflow } from "@medusajs/medusa/core-flows";
-import {
-  configToQuery,
-  describeDesign,
-  engravingLines,
-  normalizeConfig,
-  priceDesign,
-  validateForCart,
-  type DesignConfig,
-} from "@jemsutra/design-engine";
+import { normalizeConfig, validateForCart, type DesignConfig } from "@jemsutra/design-engine";
 import { findVariantId, getDesign } from "../../../../../lib/designs";
-
-const IMAGE_URL = process.env.IMAGE_SERVICE_URL ?? "http://localhost:4100";
+import { buildTrustedLineMetadata, classifyVariants, lineIsPersonalised, newLineRef } from "../../../../../lib/cart-security";
 
 type Body = {
   cart_id: string;
@@ -24,10 +15,9 @@ type Body = {
 /**
  * POST /store/designs/:style/cart-items
  *
- * Adds a personalised design to a Medusa cart. The browser only sends the
- * choices; the price is calculated here by the shared engine and set as the
- * line's unit price, so it can't be tampered with. Everything the workshop
- * needs is stored in the line item's metadata.
+ * The ONLY way a personalised design enters a cart. The browser only sends the choices; the
+ * server validates them, calculates the price with the shared engine and writes the trusted
+ * line metadata (src/lib/cart-security.ts). Checkout later rebuilds and compares all of it.
  */
 export async function POST(req: MedusaRequest<Body>, res: MedusaResponse) {
   const product = (await getDesign(req.scope, req.params.style, { publishedOnly: true }))?.definition;
@@ -36,7 +26,7 @@ export async function POST(req: MedusaRequest<Body>, res: MedusaResponse) {
     return;
   }
   const { cart_id, replace_line_id } = req.body ?? ({} as Body);
-  if (!cart_id) {
+  if (!cart_id || typeof cart_id !== "string") {
     res.status(400).json({ message: "cart_id is required" });
     return;
   }
@@ -47,7 +37,6 @@ export async function POST(req: MedusaRequest<Body>, res: MedusaResponse) {
     res.status(400).json({ message: issues.map((i) => i.message).join(" "), issues });
     return;
   }
-  const price = priceDesign(product, config);
 
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY);
   const variantId = await findVariantId(req.scope, product, config.metal);
@@ -56,31 +45,31 @@ export async function POST(req: MedusaRequest<Body>, res: MedusaResponse) {
     return;
   }
 
+  // "Modify item" may only replace a personalised line that belongs to THIS cart. Checked before
+  // anything changes (Medusa's delete step itself removes any line id it is given).
+  if (replace_line_id !== undefined) {
+    const { data } = await query.graph({ entity: "cart", fields: ["id", "items.id", "items.variant_id", "items.metadata"], filters: { id: cart_id } });
+    const line = (data[0] as { items?: { id: string; variant_id?: string | null; metadata?: unknown }[] } | undefined)?.items?.find((i) => i.id === replace_line_id);
+    if (!line) {
+      res.status(404).json({ message: "The item to replace is not in this cart." });
+      return;
+    }
+    if (!lineIsPersonalised(line, await classifyVariants(req.scope, [line.variant_id ?? ""]))) {
+      res.status(400).json({ message: "Only personalised items can be modified in the designer." });
+      return;
+    }
+  }
+
+  const { price, metadata } = buildTrustedLineMetadata(product, config);
+
   if (replace_line_id) {
     await deleteLineItemsWorkflow(req.scope).run({ input: { cart_id, ids: [replace_line_id] } });
   }
 
-  const imageQuery = configToQuery(product, config, { include: "visual" }).toString();
   await addToCartWorkflow(req.scope).run({
     input: {
       cart_id,
-      items: [
-        {
-          variant_id: variantId,
-          quantity: 1,
-          unit_price: price.total,
-          metadata: {
-            style_code: product.styleCode,
-            design: config,
-            design_summary: describeDesign(product, config),
-            engraving_lines: engravingLines(product, config),
-            price_lines: price.lines,
-            compare_at: price.compareAt ?? null,
-            image_url: `${IMAGE_URL}/img/${product.styleCode}/${product.slug}.webp?${imageQuery}&w=800`,
-            product_path: `/products/${product.styleCode}/${product.slug}?${configToQuery(product, config, { omitDefaults: true }).toString()}`,
-          },
-        },
-      ],
+      items: [{ variant_id: variantId, quantity: 1, unit_price: price.total, metadata: { ...metadata, line_ref: newLineRef() } }],
     },
   });
 
