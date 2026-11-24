@@ -2,6 +2,10 @@ import { loadEnv, defineConfig } from '@medusajs/framework/utils'
 
 loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 
+// Development email folder. The isolated M2 test environment sets OUTBOX_DIR=.outbox-m2test;
+// only ".outbox" or ".outbox-<name>" is accepted.
+const outboxDir = /^\.outbox(-[a-z0-9]+)?$/.test(process.env.OUTBOX_DIR ?? "") ? process.env.OUTBOX_DIR! : ".outbox"
+
 module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
@@ -27,7 +31,7 @@ module.exports = defineConfig({
           {
             resolve: "./src/modules/outbox-notification",
             id: "outbox",
-            options: { channels: ["email"], dir: ".outbox" },
+            options: { channels: ["email"], dir: outboxDir },
           },
         ],
       },

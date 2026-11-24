@@ -15,7 +15,14 @@ import { fileURLToPath } from "node:url";
 import EmbeddedPostgres from "embedded-postgres";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const databaseDir = path.resolve(here, "../.pgdata");
+// Optional separate data folder (the isolated M2 test database uses ".pgdata-m2test").
+// Only ".pgdata" or ".pgdata-<name>" inside apps/backend is accepted.
+const dataDirName = process.env.PG_DATA_DIR ?? ".pgdata";
+if (!/^\.pgdata(-[a-z0-9]+)?$/.test(dataDirName)) {
+  console.error(`Refusing PG_DATA_DIR="${dataDirName}": use ".pgdata" or ".pgdata-<name>".`);
+  process.exit(1);
+}
+const databaseDir = path.resolve(here, "..", dataDirName);
 const port = Number(process.env.PGPORT ?? 5432);
 const dbName = process.env.DB_NAME ?? "jemsutra";
 

@@ -25,7 +25,12 @@ export default function config(phase: string): NextConfig {
     }
   }
   const imageOrigin = new URL(process.env.NEXT_PUBLIC_IMAGE_URL ?? "http://localhost:4100").origin;
+  // Separate build folder for the isolated M2 test storefront (NEXT_DIST_DIR=.next-m2test), so it can
+  // run next to the normal dev server. Only ".next" or ".next-<name>" is accepted.
+  const distDir = process.env.NEXT_DIST_DIR ?? ".next";
+  if (!/^\.next(-[a-z0-9]+)?$/.test(distDir)) throw new Error(`NEXT_DIST_DIR must be ".next" or ".next-<name>", got "${distDir}".`);
   return {
+    distDir,
     pageExtensions: [...(devPages ? ["dev.tsx"] : []), ...(demoCatalog ? ["demo.tsx"] : []), "tsx", "ts", "jsx", "js"],
     async headers() {
       const rules = [];

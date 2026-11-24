@@ -29,3 +29,7 @@ build
 
 # dev email outbox
 .outbox
+
+# Isolated M2 test environment (local only, never commit)
+.pgdata-*
+.outbox-*
